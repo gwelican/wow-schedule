@@ -21,9 +21,11 @@
     "moment-timezone": "^0.5.33",
     "moment-range": "^4.0.2",
     "apexcharts": "^3.24.0",
-    "vue-apexcharts": "^1.6.0"
+    "vue-apexcharts": "^1.6.0",
+    "luxon": "^1.25.0"
   },
   "devDependencies": {
+    "@types/luxon": "^1.25.0",
     "@nuxt/types": "^2.14.12",
     "@nuxt/typescript-build": "^2.0.4",
     "@nuxtjs/eslint-config-typescript": "^5.0.0",
