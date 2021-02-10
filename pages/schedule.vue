@@ -3,38 +3,66 @@
     <v-card>
       <v-card-title>Schedule</v-card-title>
       <v-card-text>
-        <v-container>
-          <client-only>
-            <apexchart
-              ref="chart"
-              type="rangeBar"
-              :options="options"
-              :series="series"
-              height="100%"
-              width="100%"
-            ></apexchart>
-          </client-only>
-          {{ series }}
-        </v-container>
-        <v-card v-for="range in ranges" :key="range.start.toISO()">
-          <v-card-text
-            >{{ range.start.hour }}:{{ range.start.minute }} -
-            {{ range.end.hour }}:{{ range.end.minute }}</v-card-text
-          >
-        </v-card>
-        Ranges: {{ ranges }}
         <v-row>
           <v-col>
             <v-card>
               <v-card-title>Free days</v-card-title>
               <v-card-text>
-                <v-text-field v-model="start" label="start"></v-text-field>
-                <v-text-field v-model="end" label="end"></v-text-field>
-                <v-text-field v-model="tz" label="Timezone" />
-                <v-text-field v-model="day" label="Day"></v-text-field>
-                <v-btn @click="addRange()"></v-btn>
+                <v-row>
+                  <v-col offset-lg="2" lg="1">
+                    <v-text-field v-model="start" label="start"></v-text-field>
+                  </v-col>
+                  <v-col lg="1">
+                    <v-text-field v-model="end" label="end"></v-text-field>
+                  </v-col>
+                  <v-col lg="1">
+                    <v-select
+                      v-model="tz"
+                      label="Timezone"
+                      :items="['PST', 'EST', 'CST', 'MYS']"
+                    />
+                  </v-col>
+                  <v-col lg="1">
+                    <v-select v-model="day" label="Day" :items="weekdays" />
+                  </v-col>
+                  <v-col offset-lg="2" lg="4" class="justify-end">
+                    <v-chip-group :key="forceRenderNumber" multiple column>
+                      <v-container
+                        v-for="day in Array.from(avail.keys())"
+                        :key="day"
+                      >
+                        <v-row>
+                          <v-chip
+                            v-for="interval in avail.get(day)"
+                            :key="day + interval.start"
+                            close
+                            @click="deleteAvailability(day, interval)"
+                            @click:close="deleteAvailability(day, interval)"
+                          >
+                            {{ day }} {{ interval.start | humanDate }} -
+                            {{ interval.end | humanDate }}
+                          </v-chip>
+                        </v-row>
+                      </v-container>
+                    </v-chip-group>
+                  </v-col>
+                </v-row>
+                <v-btn @click="addRange()">Add</v-btn>
               </v-card-text>
             </v-card>
+          </v-col>
+        </v-row>
+        <v-row no-gutters>
+          <v-col>
+            <client-only>
+              <apexchart
+                ref="chart"
+                type="rangeBar"
+                :options="options"
+                :series="series"
+                height="200%"
+              ></apexchart>
+            </client-only>
           </v-col>
         </v-row>
       </v-card-text>
@@ -44,81 +72,61 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
-import { DateTime } from 'luxon'
+import { DateTime, Interval } from 'luxon'
 import { ApexOptions } from 'apexcharts'
+import _ from 'lodash'
 
-class Interval {
-  start: DateTime
-  end: DateTime
-  type: string
-  day: string
-
-  constructor(start: DateTime, end: DateTime, type: string, day: string) {
-    this.start = start
-    this.end = end
-    this.type = type
-    this.day = day
-  }
-}
-
-@Component
+@Component({
+  filters: {
+    humanDate: (value) => {
+      return DateTime.fromISO(value).toFormat('HH:mm')
+    },
+  },
+})
 export default class Schedule extends Vue {
-  ranges: Interval[] = []
+  private forceRenderNumber: number = 0
   start: string = '08:00'
   end: string = '12:00'
 
   day: string = 'mon'
   tz: string = 'PST'
+  type: string = 'free'
+
+  avail: Map<string, Interval[]> = new Map<>()
 
   options: ApexOptions = {
     chart: {
       type: 'rangeBar',
+      zoom: { enabled: false },
     },
     plotOptions: {
       bar: {
         horizontal: true,
-        barHeight: '50%',
+        barHeight: '80%',
+        stroke: {
+          width: 1,
+        },
+        fill: {
+          type: 'solid',
+          opacity: 0.6,
+        },
       },
+    },
+    tooltip: {
+      enabled: false,
+    },
+    noData: {
+      text: 'No data',
     },
     annotations: {
-      xaxis: [
-        // {
-        //   x: DateTime.local(2021, 1, 1, 0, 0).toJSDate().getTime(),
-        //   borderColor: '#775DD0',
-        //   style: {
-        //     color: '#fff',
-        //   },
-        //
-        //   label: {
-        //     orientation: 'horizontal',
-        //     text: 'monday',
-        //   },
-        // },
-        // {
-        //   x: DateTime.local(2021, 1, 10).toJSDate().getTime(),
-        //   label: {
-        //     orientation: 'horizontal',
-        //     text: 'Sunday',
-        //   },
-        // },
-      ],
-    },
-    dataLabels: {
-      enabled: false,
-      formatter: (vals, opts) => {
-        const label = opts.w.globals.labels[opts.dataPointIndex]
-        return label
-      },
+      xaxis: [],
     },
     xaxis: {
       tickAmount: 24,
       type: 'datetime',
       labels: {
-        // offsetX: -35,
         formatter: (value, timestamp, opts) => {
-          const x = DateTime.fromJSDate(new Date(value))
-          return x.toFormat('HH:mm')
-          // return opts.dateFormatter(new Date(timestamp)).format('dd MMM')
+          return DateTime.fromJSDate(new Date(value)).toFormat('HH:mm')
         },
       },
       min: DateTime.local(2021, 1, 1, 0, 0).toJSDate().getTime(),
@@ -136,47 +144,68 @@ export default class Schedule extends Vue {
 
   mounted() {
     for (let i = 0; i < 7; i++) {
-      this.ranges.push(
-        new Interval(
-          DateTime.local(2021, 1, 1, 8, 0),
-          DateTime.local(2021, 1, 1, 10, 0),
-          'free',
-          this.weekdays[i]
-        )
-      )
+      const start = DateTime.local(2021, 1, 1, 8, 0)
+      const end = DateTime.local(2021, 1, 1, 10, 0)
+
+      if (!this.avail.has(this.weekdays[i])) {
+        this.avail.set(this.weekdays[i], [])
+      }
+      // this.avail.get(this.weekdays[i]).push(Interval.fromDateTimes(start, end))
     }
-    // this.ranges.push(
-    //   new Interval(
-    //     DateTime.local(2021, 1, 4, 8, 0),
-    //     DateTime.local(2021, 1, 4, 10, 0),
-    //     'free',
-    //     'mon'
-    //   )
-    // )
-    // this.ranges.push(
-    //   new Interval(
-    //     DateTime.local(2021, 1, 4, 8, 0),
-    //     DateTime.local(2021, 1, 4, 10, 0),
-    //     'free',
-    //     'tue'
-    //   )
-    // )
+
+    this.updateChart()
+  }
+
+  deleteAvailability(day, interval: Interval) {
+    this.avail.set(
+      day,
+      _.filter(this.avail.get(day), (v: Interval) => {
+        interval.equals(v)
+      })
+    )
+
     this.updateChart()
   }
 
   addRange() {
-    const startDate = DateTime.fromFormat(this.start, 'hh:mm').set({
-      day: 4,
-      year: 2021,
-      month: 1,
-    })
-    const endDate = DateTime.fromFormat(this.end, 'hh:mm').set({
-      day: 4,
-      year: 2021,
-      month: 1,
+    const start = DateTime.fromFormat(this.start, 'hh:mm')
+      .set({
+        day: 1,
+        year: 2021,
+        month: 1,
+      })
+      .setZone('PST')
+
+    const newInterval = Interval.fromDateTimes(
+      start,
+      DateTime.fromFormat(this.end, 'hh:mm')
+        .set({
+          day: 1,
+          year: 2021,
+          month: 1,
+        })
+        .setZone('PST')
+    )
+
+    const isOverlap = _.find(this.avail.get(this.day), (val) => {
+      return newInterval.overlaps(val)
     })
 
-    this.ranges.push(new Interval(startDate, endDate, 'free'))
+    if (isOverlap) {
+      const mergedInterval = _.flatMap(
+        this.avail.get(this.day),
+        (val: Interval) => {
+          if (val.overlaps(newInterval)) {
+            return Interval.merge([newInterval, val])
+          }
+        }
+      )
+
+      this.avail.set(this.day, mergedInterval)
+    } else {
+      this.avail.get(this.day).push(newInterval)
+    }
+
     this.updateChart()
   }
 
@@ -184,18 +213,24 @@ export default class Schedule extends Vue {
     const x = this.series.slice()
     x[0].data = []
 
-    for (const range: Interval of this.ranges) {
-      console.log(range)
-      x[0].data.push({
-        x: range.day,
-        y: [range.start.toJSDate().getTime(), range.end.toJSDate().getTime()],
-      })
+    for (const day: string of this.avail.keys()) {
+      for (const interval: Interval of this.avail.get(day)) {
+        x[0].data.push({
+          x: day,
+          y: [
+            interval.start.set({ day: 1 }).toJSDate().getTime(),
+            interval.end.set({ day: 1 }).toJSDate().getTime(),
+          ],
+        })
+      }
+      if (this.avail.get(day).length === 0) {
+        x[0].data.push({
+          x: day,
+          y: [DateTime.local(2021, 1, 1), DateTime.local(2021, 1, 1)],
+        })
+      }
     }
-
-    // x[0].data.push({
-    //   x: 'Gwelican',
-    //   y: [new Date('2019-03-07').getTime(), new Date('2019-03-11').getTime()],
-    // })
+    this.forceRenderNumber++
     this.series = x
   }
 }
