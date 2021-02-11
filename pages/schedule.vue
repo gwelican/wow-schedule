@@ -92,7 +92,7 @@ export default class Schedule extends Vue {
   tz: string = 'PST'
   type: string = 'free'
 
-  avail: Map<string, Interval[]> = new Map<>()
+  avail: Map<string, Interval[]> = new Map<string, Interval[]>()
 
   options: ApexOptions = {
     chart: {
@@ -103,9 +103,7 @@ export default class Schedule extends Vue {
       bar: {
         horizontal: true,
         barHeight: '80%',
-        stroke: {
-          width: 1,
-        },
+
         fill: {
           type: 'solid',
           opacity: 0.6,
@@ -224,10 +222,11 @@ export default class Schedule extends Vue {
         })
       }
       if (this.avail.get(day).length === 0) {
-        x[0].data.push({
+        const items = {
           x: day,
           y: [DateTime.local(2021, 1, 1), DateTime.local(2021, 1, 1)],
-        })
+        }
+        x[0].data.push(items)
       }
     }
     this.forceRenderNumber++
