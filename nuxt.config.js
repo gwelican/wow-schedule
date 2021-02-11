@@ -65,6 +65,10 @@ export default {
     },
   },
 
+  router: {
+    base: '/visa-checker/',
+  },
+
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     plugins: [
