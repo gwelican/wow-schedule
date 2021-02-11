@@ -1,8 +1,7 @@
 <template>
   <v-container>
     <v-card>
-      {{ availabilityMap }}
-      <v-card-title>Data</v-card-title>
+      <v-card-title>Availability</v-card-title>
       <v-card-text>
         <client-only>
           <apexchart
@@ -13,7 +12,6 @@
             height="200%"
           ></apexchart>
         </client-only>
-        {{ series }}
         <!--        <v-container :key="forceUpdate">-->
         <!--          <v-card v-for="user in series[0].data" :key="user">-->
         <!--            <v-card-title>{{ user }} </v-card-title>-->
@@ -35,22 +33,27 @@ import { ApexOptions } from 'apexcharts'
 import { DateTime, Duration, Interval } from 'luxon'
 import _ from 'lodash'
 
+export interface SeriesData {}
+export interface Series {
+  data: SeriesData[]
+}
+
 const availability = namespace('availability')
 
 @Component({
   filters: {
-    humanDate: (value) => {
-      // DateTime.fromMillis()
-      return DateTime.fromMillis(value).toFormat('yyyy-MM-dd HH:mm ZZZZ')
-    },
+    // humanDate: (value) => {
+    //   // DateTime.fromMillis()
+    //   return DateTime.fromMillis(value).toFormat('yyyy-MM-dd HH:mm ZZZZ')
+    // },
   },
 })
 export default class Index extends Vue {
   @availability.State
-  private availabilityMap
+  private availabilityMap!: Map<string, Map<string, Interval[]>>
 
   @availability.Action
-  private loadAvailability
+  private loadAvailability!: any
 
   options: ApexOptions = {
     chart: {
@@ -61,13 +64,6 @@ export default class Index extends Vue {
       bar: {
         horizontal: true,
         barHeight: '80%',
-        stroke: {
-          width: 1,
-        },
-        fill: {
-          type: 'solid',
-          opacity: 0.6,
-        },
       },
     },
     annotations: {
@@ -81,101 +77,101 @@ export default class Index extends Vue {
       ],
     },
     xaxis: {
-      tickAmount: 6,
+      tickAmount: 7,
+      tickPlacement: 'on',
       type: 'datetime',
       labels: {
         formatter: (value, timestamp, opts) => {
-          return DateTime.fromJSDate(new Date(value)).toFormat('DD/MM HH:mm')
+          return DateTime.fromJSDate(new Date(value)).toFormat('ccc HH:mm')
         },
       },
       min: DateTime.local()
-        .minus(Duration.fromObject({ hour: 8 }))
+        .minus(Duration.fromObject({ hour: 1 }))
+        .set({
+          minute: 0,
+        })
         .toJSDate()
         .getTime(),
       max: DateTime.local()
-        .plus(Duration.fromObject({ hour: 8 }))
+        .plus(Duration.fromObject({ hour: 6 }))
+        .set({
+          minute: 0,
+        })
         .toJSDate()
         .getTime(),
     },
   }
 
-  series = [
+  series: Series[] = [
     {
       data: [],
     },
   ]
 
-  avail: Map<string, Map<string, Interval>> = new Map<
+  // series: ApexAxisChartSeries = []
+  // {
+  //   data: as SeriesData[],
+  // },
+  // ]
+
+  avail: Map<string, Map<string, Interval[]>> = new Map<
     string,
     Map<string, Interval[]>
   >()
 
   mounted() {
-    for (const user of ['Gwelican', 'Kiki']) {
-      this.avail.set(user, new Map<string, Interval>())
+    for (const user of ['Gwelican', 'Kiki', 'JP']) {
+      this.avail.set(user, new Map<string, Interval[]>())
       for (let day = 0; day < 7; day++) {
         const weekDay = DateTime.local().plus(
           Duration.fromObject({ hour: day * 24 })
         ).weekdayShort
 
-        this.avail.get(user).set(weekDay, [])
+        this.avail.get(user)?.set(weekDay, [])
       }
     }
 
     this.avail
       .get('Gwelican')
-      .set('Thu', [
-        Interval.fromDateTimes(
-          DateTime.fromObject({ hour: 20, minute: 0, zone: 'PST' }),
-          DateTime.fromObject({ hour: 22, minute: 0, zone: 'PST' })
-        ),
-        Interval.fromDateTimes(
-          DateTime.fromObject({ hour: 23, minute: 0, zone: 'PST' }),
-          DateTime.fromObject({ hour: 24, minute: 0, zone: 'PST' })
-        ),
-      ])
+      ?.set('Thu', [this.getIntervalForTime(20, 24, 'PST')])
     this.avail
-      .get('Kiki')
-      .set('Wed', [
-        Interval.fromDateTimes(
-          DateTime.fromObject({ hour: 20, minute: 0, zone: 'EST' }),
-          DateTime.fromObject({ hour: 24, minute: 0, zone: 'EST' })
-        ),
-      ])
+      .get('Gwelican')
+      ?.set('Fri', [this.getIntervalForTime(20, 24, 'PST')])
 
-    this.avail
-      .get('Kiki')
-      .set('Thu', [
-        Interval.fromDateTimes(
-          DateTime.fromObject({ hour: 1, minute: 0, zone: 'EST' }),
-          DateTime.fromObject({ hour: 2, minute: 0, zone: 'EST' })
-        ),
-        Interval.fromDateTimes(
-          DateTime.fromObject({ hour: 3, minute: 0, zone: 'EST' }),
-          DateTime.fromObject({ hour: 4, minute: 0, zone: 'EST' })
-        ),
-      ])
+    this.avail.get('Kiki')?.set('Fri', [this.getIntervalForTime(15, 23, 'PST')])
+    this.avail.get('Kiki')?.set('Thu', [this.getIntervalForTime(15, 18, 'PST')])
+    this.avail.get('Kiki')?.set('Thu', [this.getIntervalForTime(18, 23, 'PST')])
+
+    this.avail.get('JP')?.set('Thu', [this.getIntervalForTime(16, 23, 'PST')])
+    this.avail.get('JP')?.set('Mon', [this.getIntervalForTime(16, 23, 'PST')])
+    this.avail.get('JP')?.set('Wed', [this.getIntervalForTime(16, 23, 'PST')])
 
     this.updateChart()
+  }
+
+  private getIntervalForTime(
+    hourStart: number,
+    hourEnd: number,
+    timeZone: string
+  ) {
+    return Interval.fromDateTimes(
+      DateTime.fromObject({ hour: hourStart, minute: 0, zone: timeZone }),
+      DateTime.fromObject({ hour: hourEnd, minute: 0, zone: timeZone })
+    )
   }
 
   private forceUpdate = 0
   private updateChart() {
     const x = this.series.slice()
-    x[0].data = []
-
+    // const t = {}
+    // x.push(t)
     const today = DateTime.local().weekdayShort
     const tomorrow = DateTime.local().plus(Duration.fromObject({ hour: 24 }))
       .weekdayShort
-
-    for (const user: string of this.avail.keys()) {
+    for (const user of this.avail.keys()) {
       const userAvailability = this.avail.get(user)
 
-      const item = {
-        x: user,
-        y: [],
-      }
-      for (const interval: Interval of userAvailability.get(today)) {
+      for (const interval of userAvailability?.get(today) as Interval[]) {
         x[0].data.push({
           x: user,
           y: [
@@ -184,21 +180,29 @@ export default class Index extends Vue {
           ],
         })
       }
-      for (const interval: Interval of userAvailability.get(tomorrow)) {
-        console.log(interval.start.zone)
+      for (const interval of userAvailability?.get(tomorrow) as Interval[]) {
         x[0].data.push({
           x: user,
           y: [
-            interval.start.toLocal().toJSDate().getTime(),
-            interval.end.toLocal().toJSDate().getTime(),
+            interval.start
+              .toLocal()
+              .plus(Duration.fromObject({ day: 1 }))
+              .toJSDate()
+              .getTime(),
+            interval.end
+              .toLocal()
+              .plus(Duration.fromObject({ day: 1 }))
+              .toJSDate()
+              .getTime(),
           ],
         })
       }
     }
     this.forceUpdate++
-
     this.series = x
-    console.log(this.series)
+    console.log(JSON.stringify(this.series))
+    // [{"data":[{"x":"Gwelican","y":[1613102400000,1613116800000]},{"x":"Gwelican","y":[1613102400000,1613116800000]},{"x":"Kiki","y":[1613095200000,1613113200000]},{"x":"Kiki","y":[1613084400000,1613113200000]}]}]
+    // [{"data":[]},{"name":"Gwelican","data":[{"x":"Gwelican","y":[1613102400000,1613116800000]},{"x":"Gwelican","y":[1613188800000,1613203200000]}]},{"name":"Kiki","data":[{"x":"Kiki","y":[1613095200000,1613113200000]},{"x":"Kiki","y":[1613170800000,1613199600000]}]}]
   }
 }
 </script>

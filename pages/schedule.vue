@@ -75,10 +75,17 @@ import { Component, Vue } from 'nuxt-property-decorator'
 import { DateTime, Interval } from 'luxon'
 import { ApexOptions } from 'apexcharts'
 import _ from 'lodash'
+import { Series } from '~/pages/index.vue'
+
+// type ChartData = {
+// {
+//   x: any; y: any
+// }
+// }
 
 @Component({
   filters: {
-    humanDate: (value) => {
+    humanDate: (value: string) => {
       return DateTime.fromISO(value).toFormat('HH:mm')
     },
   },
@@ -103,11 +110,6 @@ export default class Schedule extends Vue {
       bar: {
         horizontal: true,
         barHeight: '80%',
-
-        fill: {
-          type: 'solid',
-          opacity: 0.6,
-        },
       },
     },
     tooltip: {
@@ -132,7 +134,7 @@ export default class Schedule extends Vue {
     },
   }
 
-  series = [
+  series: Series[] = [
     {
       data: [],
     },
@@ -142,8 +144,8 @@ export default class Schedule extends Vue {
 
   mounted() {
     for (let i = 0; i < 7; i++) {
-      const start = DateTime.local(2021, 1, 1, 8, 0)
-      const end = DateTime.local(2021, 1, 1, 10, 0)
+      // const start = DateTime.local(2021, 1, 1, 8, 0)
+      // const end = DateTime.local(2021, 1, 1, 10, 0)
 
       if (!this.avail.has(this.weekdays[i])) {
         this.avail.set(this.weekdays[i], [])
@@ -154,10 +156,10 @@ export default class Schedule extends Vue {
     this.updateChart()
   }
 
-  deleteAvailability(day, interval: Interval) {
+  deleteAvailability(day: string, interval: Interval) {
     this.avail.set(
       day,
-      _.filter(this.avail.get(day), (v: Interval) => {
+      _.remove(this.avail.get(day) as Interval[], (v: Interval) => {
         interval.equals(v)
       })
     )
@@ -185,34 +187,49 @@ export default class Schedule extends Vue {
         .setZone('PST')
     )
 
-    const isOverlap = _.find(this.avail.get(this.day), (val) => {
-      return newInterval.overlaps(val)
-    })
+    // // const isOverlap = _.find(this.avail.get(this.day), (val) => {
+    // //   return newInterval.overlaps(val)
+    // })
 
-    if (isOverlap) {
-      const mergedInterval = _.flatMap(
-        this.avail.get(this.day),
-        (val: Interval) => {
-          if (val.overlaps(newInterval)) {
-            return Interval.merge([newInterval, val])
-          }
-        }
-      )
-
-      this.avail.set(this.day, mergedInterval)
-    } else {
-      this.avail.get(this.day).push(newInterval)
-    }
-
+    const currentIntervals = this.avail.get(this.day) as Interval[]
+    currentIntervals.push(newInterval)
+    this.avail.set(this.day, Interval.merge(currentIntervals))
+    // if (isOverlap) {
+    //   for (const index in currentIntervals) {
+    //     if (currentIntervals[index].overlaps(newInterval)) {
+    //       currentIntervals[index] = Interval.merge([
+    //         currentIntervals[index],
+    //         newInterval,
+    //       ])
+    //     }
+    //   }
+    //   this.avail.set(this.day, currentIntervals)
+    // } else {
+    //   this.avail.get(this.day)?.push(newInterval)
+    // }
+    // if (isOverlap) {
+    //   const mergedInterval = _.flatMap(
+    //     this.avail.get(this.day),
+    //     (val: Interval) => {
+    //       if (val.overlaps(newInterval)) {
+    //         return Interval.merge([newInterval, val])
+    //       }
+    //     }
+    //   ) as Interval[]
+    //
+    //   this.avail.set(this.day, mergedInterval)
+    // } else {
+    //   this.avail.get(this.day)?.push(newInterval)
+    // }
+    // currentIntervals?.push(newInterval)
     this.updateChart()
   }
 
   private updateChart() {
     const x = this.series.slice()
-    x[0].data = []
 
-    for (const day: string of this.avail.keys()) {
-      for (const interval: Interval of this.avail.get(day)) {
+    for (const day of this.avail.keys()) {
+      for (const interval of this.avail?.get(day) as Interval[]) {
         x[0].data.push({
           x: day,
           y: [
@@ -221,12 +238,20 @@ export default class Schedule extends Vue {
           ],
         })
       }
-      if (this.avail.get(day).length === 0) {
-        const items = {
-          x: day,
-          y: [DateTime.local(2021, 1, 1), DateTime.local(2021, 1, 1)],
-        }
-        x[0].data.push(items)
+      if (this.avail.get(day)?.length === 0) {
+        // x.push({
+        //   name: 'test',
+        //   data: [
+        //     {
+        //       x: day,
+        //       y: [DateTime.local(2021, 1, 1), DateTime.local(2021, 1, 1)],
+        //     },
+        //   ],
+        // })
+        // x[0].data.push({
+        //   x: day,
+        //   y: [DateTime.local(2021, 1, 1), DateTime.local(2021, 1, 1)],
+        // } as ChartData)
       }
     }
     this.forceRenderNumber++
