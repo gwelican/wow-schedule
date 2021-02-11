@@ -66,7 +66,7 @@ export default {
   },
 
   router: {
-    base: '/visa-checker/',
+    base: '/wow-schedule/',
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
