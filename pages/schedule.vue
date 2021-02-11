@@ -125,7 +125,7 @@ export default class Schedule extends Vue {
       tickAmount: 24,
       type: 'datetime',
       labels: {
-        formatter: (value, _, _) => {
+        formatter: (value, _) => {
           return DateTime.fromJSDate(new Date(value)).toFormat('HH:mm')
         },
       },

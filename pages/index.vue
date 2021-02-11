@@ -80,7 +80,7 @@ export default class Index extends Vue {
       tickPlacement: 'on',
       type: 'datetime',
       labels: {
-        formatter: (value, _, _) => {
+        formatter: (value, _) => {
           return DateTime.fromJSDate(new Date(value)).toFormat('ccc HH:mm')
         },
       },
