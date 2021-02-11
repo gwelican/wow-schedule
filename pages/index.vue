@@ -31,7 +31,6 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import { ApexOptions } from 'apexcharts'
 import { DateTime, Duration, Interval } from 'luxon'
-import _ from 'lodash'
 
 export interface SeriesData {}
 export interface Series {
@@ -81,7 +80,7 @@ export default class Index extends Vue {
       tickPlacement: 'on',
       type: 'datetime',
       labels: {
-        formatter: (value, timestamp, opts) => {
+        formatter: (value, _, _) => {
           return DateTime.fromJSDate(new Date(value)).toFormat('ccc HH:mm')
         },
       },
