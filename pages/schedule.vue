@@ -112,6 +112,11 @@ export default class Schedule extends Vue {
         barHeight: '80%',
       },
     },
+    dataLabels: {
+      formatter(_): string {
+        return 'Available'
+      },
+    },
     tooltip: {
       enabled: false,
     },
