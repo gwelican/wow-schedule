@@ -3,6 +3,7 @@
     <v-card>
       <v-card-title>Availability</v-card-title>
       <v-card-text>
+        {{ availabilityMap }}
         <client-only>
           <apexchart
             ref="chart"
@@ -52,7 +53,7 @@ export default class Index extends Vue {
   private availabilityMap!: Map<string, Map<string, Interval[]>>
 
   @availability.Action
-  private loadAvailability!: any
+  private loadAvailability2!: any
 
   options: ApexOptions = {
     chart: {
@@ -119,31 +120,87 @@ export default class Index extends Vue {
   >()
 
   mounted() {
-    for (const user of ['Gwelican', 'Kiki', 'JP']) {
+    this.loadAvailability2(this.$apollo)
+    const schedule = {
+      Gwelican: {
+        timezone: 'PST',
+        Thu: [20, 24],
+        Fri: [20, 24],
+      },
+      Kiki: {
+        timezone: 'PST',
+        Thu: [15, 23],
+        Fri: [15, 23],
+      },
+      JP: {
+        timezone: 'PST',
+        Mon: [16, 23],
+        Wed: [16, 23],
+        Thu: [16, 23],
+      },
+      Strange: {
+        timezone: 'PST',
+        Mon: [18, 23],
+        Tue: [20, 23],
+        Wed: [18, 23],
+        Thu: [18, 23],
+        Fri: [18, 23],
+        Sat: [18, 23],
+        Sun: [20, 23],
+      },
+      Aurri: {
+        timezone: 'EST',
+      },
+    }
+
+    for (const user in schedule) {
       this.avail.set(user, new Map<string, Interval[]>())
+
       for (let day = 0; day < 7; day++) {
         const weekDay = DateTime.local().plus(
           Duration.fromObject({ hour: day * 24 })
         ).weekdayShort
+        const tz = schedule[user].tz
 
+        const userScheduleForDay = schedule[user][weekDay]
+        // console.log(userScheduleForDay)
         this.avail.get(user)?.set(weekDay, [])
+        // console.log(userScheduleForDay)
+        if (userScheduleForDay) {
+          const intervalForTime = this.getIntervalForTime(
+            userScheduleForDay[0],
+            userScheduleForDay[1],
+            tz
+          )
+          this.avail.get(user)?.get(weekDay).push(intervalForTime)
+        }
       }
     }
+    // for (const user of ['Gwelican', 'Kiki', 'JP', 'Strange']) {
+    //   this.avail.set(user, new Map<string, Interval[]>())
+    //   for (let day = 0; day < 7; day++) {
+    //     const weekDay = DateTime.local().plus(
+    //       Duration.fromObject({ hour: day * 24 })
+    //     ).weekdayShort
+    //
+    //     this.avail.get(user)?.set(weekDay, [])
+    //   }
+    // }
 
-    this.avail
-      .get('Gwelican')
-      ?.set('Thu', [this.getIntervalForTime(20, 24, 'PST')])
-    this.avail
-      .get('Gwelican')
-      ?.set('Fri', [this.getIntervalForTime(20, 24, 'PST')])
-
-    this.avail.get('Kiki')?.set('Fri', [this.getIntervalForTime(15, 23, 'PST')])
-    this.avail.get('Kiki')?.set('Thu', [this.getIntervalForTime(15, 18, 'PST')])
-    this.avail.get('Kiki')?.set('Thu', [this.getIntervalForTime(18, 23, 'PST')])
-
-    this.avail.get('JP')?.set('Thu', [this.getIntervalForTime(16, 23, 'PST')])
-    this.avail.get('JP')?.set('Mon', [this.getIntervalForTime(16, 23, 'PST')])
-    this.avail.get('JP')?.set('Wed', [this.getIntervalForTime(16, 23, 'PST')])
+    // this.avail
+    //   .get('Gwelican')
+    //   ?.set('Thu', [this.getIntervalForTime(20, 24, 'PST')])
+    // this.avail
+    //   .get('Gwelican')
+    //   ?.set('Fri', [this.getIntervalForTime(20, 24, 'PST')])
+    //
+    // this.avail.get('Kiki')?.set('Fri', [this.getIntervalForTime(15, 23, 'PST')])
+    // this.avail.get('Kiki')?.set('Thu', [this.getIntervalForTime(15, 18, 'PST')])
+    // this.avail.get('Kiki')?.set('Thu', [this.getIntervalForTime(18, 23, 'PST')])
+    //
+    // this.avail.get('JP')?.set('Thu', [this.getIntervalForTime(16, 23, 'PST')])
+    // this.avail.get('JP')?.set('Mon', [this.getIntervalForTime(16, 23, 'PST')])
+    // this.avail.get('JP')?.set('Wed', [this.getIntervalForTime(16, 23, 'PST')])
 
     this.updateChart()
   }
@@ -167,6 +224,7 @@ export default class Index extends Vue {
     const today = DateTime.local().weekdayShort
     const tomorrow = DateTime.local().plus(Duration.fromObject({ hour: 24 }))
       .weekdayShort
+
     for (const user of this.avail.keys()) {
       const userAvailability = this.avail.get(user)
 

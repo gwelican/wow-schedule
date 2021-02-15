@@ -1,0 +1,36 @@
+type Query {
+  users(titleFilter: String): [UserData]
+}
+
+type Mutation {
+  addUser(input: AddUserInput!): AddUserPayload
+}
+
+type AddUserPayload {
+  userId: String
+}
+input AddUserInput {
+  userId: String
+  timezone: String
+  availability: [IntervalInput]
+  username: String
+}
+type UserData {
+  userId: String
+  timezone: String
+  availability: [Interval]
+  username: String
+
+}
+input IntervalInput {
+  start: Int
+  end: Int
+  timeZone: String
+  day: String
+}
+type Interval {
+  start: Int
+  end: Int
+  timeZone: String
+  day: String
+}
