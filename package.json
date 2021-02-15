@@ -23,7 +23,7 @@
     "firebase": "^8.2.6",
     "graphql-tag": "^2.11.0",
     "lodash": "^4.17.20",
-    "luxon": "^1.25.0",
+    "luxon": "^1.26.0",
     "moment": "^2.29.1",
     "moment-range": "^4.0.2",
     "moment-timezone": "^0.5.33",
