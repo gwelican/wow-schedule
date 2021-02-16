@@ -1,1 +1,0 @@
-window.__NUXT__={staticAssetsBase:"\u002Fwow-schedule\u002F_nuxt\u002Fstatic\u002F1613438326",layout:"default",error:null,state:{availability:{series:[],stateCounter:0,availabilityMap:new Map([])}},serverRendered:true,routePath:"\u002Fschedule",config:{},apollo:{defaultClient:Object.create(null)}};
