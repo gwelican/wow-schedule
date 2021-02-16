@@ -199,34 +199,6 @@ export default class Schedule extends Vue {
     const currentIntervals = this.avail.get(this.day) as Interval[]
     currentIntervals.push(newInterval)
     this.avail.set(this.day, Interval.merge(currentIntervals))
-    // if (isOverlap) {
-    //   for (const index in currentIntervals) {
-    //     if (currentIntervals[index].overlaps(newInterval)) {
-    //       currentIntervals[index] = Interval.merge([
-    //         currentIntervals[index],
-    //         newInterval,
-    //       ])
-    //     }
-    //   }
-    //   this.avail.set(this.day, currentIntervals)
-    // } else {
-    //   this.avail.get(this.day)?.push(newInterval)
-    // }
-    // if (isOverlap) {
-    //   const mergedInterval = _.flatMap(
-    //     this.avail.get(this.day),
-    //     (val: Interval) => {
-    //       if (val.overlaps(newInterval)) {
-    //         return Interval.merge([newInterval, val])
-    //       }
-    //     }
-    //   ) as Interval[]
-    //
-    //   this.avail.set(this.day, mergedInterval)
-    // } else {
-    //   this.avail.get(this.day)?.push(newInterval)
-    // }
-    // currentIntervals?.push(newInterval)
     this.updateChart()
   }
 
