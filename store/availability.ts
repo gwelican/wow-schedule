@@ -10,23 +10,10 @@ import { Series } from '~/pages/index.vue'
   namespaced: true,
 })
 export default class Availability extends VuexModule {
-  // wheels = 2
-
   private series: Series[] = []
-  private stateCounter = 0
-  private availabilityMap: Map<string, Map<string, Interval[]>> = new Map<
-    string,
-    Map<string, Interval[]>
-  >()
 
   @Action
-  async loadAvailability2(apollo: DollarApollo) {
-    // const map = new Map<string, Map<string, DateTime>>()
-    // this.context.commit('setAvailability', map)
-    // console.log(this.$store)
-    // console.log(this.context)
-    // const client = this.app.apolloProvider.defaultClient
-    // console.log(client)
+  async loadAvailability(apollo: DollarApollo) {
     const map = new Map<string, Map<string, Interval[]>>()
     const response = await apollo.query({
       query: gql`
@@ -45,7 +32,6 @@ export default class Availability extends VuexModule {
         }
       `,
     })
-    console.log(response.data)
     for (const user of response.data.users) {
       map.set(user.username, new Map<string, Interval[]>())
       for (let day = 0; day < 7; day++) {
@@ -67,29 +53,7 @@ export default class Availability extends VuexModule {
           ])
       }
     }
-    this.context.commit('setAvailability', map)
     this.context.commit('generateSeries', map)
-    // console.log($apoll)
-    // const response = await this.app.apolloProvider.defaultClient.query({
-    //   query: gql`
-    //     query GetGames {
-    //       favoriteGames {
-    //         id
-    //         image
-    //         name
-    //         rating
-    //         gameUser {
-    //           id
-    //           name
-    //           profileImg
-    //         }
-    //       }
-    //     }
-    //   `,
-    // })
-    //
-    // await commit('updateFavoriteGames', response.data.favoriteGames)
-    // this.availabilityMap.set('Gwelican', new Map<string, DateTime>())
   }
 
   @Mutation
@@ -131,17 +95,6 @@ export default class Availability extends VuexModule {
     }
     this.series = series
   }
-
-  @Mutation
-  setAvailability(map: Map<string, Map<string, Interval[]>>) {
-    this.availabilityMap = map
-    this.stateCounter++
-    // console.log(map)
-  }
-
-  // get availabilityMap() {
-  //   return this.availabilityMap
-  // }
 }
 
 function getIntervalForTime(
