@@ -1,5 +1,5 @@
 overwrite: true
-schema: "http://localhost:8080/graphql"
+schema: "https://wow.gwelican.eu/graphql"
 #documents: "apollo/**/*.graphql"
 generates:
   types/graphql.d.ts:

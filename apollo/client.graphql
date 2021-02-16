@@ -1,9 +1,24 @@
 type Query {
   users(titleFilter: String): [UserData]
+  myschedule: UserData
+}
+
+type UserData {
+  userId: String!
+  timezone: String!
+  availability: [Interval]!
+  username: String!
+}
+
+type Interval {
+  start: Int!
+  end: Int!
+  timeZone: String!
+  day: String!
 }
 
 type Mutation {
-  addUser(input: AddUserInput!): AddUserPayload
+  addAvailabilityToUser(username: String, availability: IntervalInput ): UserData
 }
 
 type AddUserPayload {
@@ -15,20 +30,8 @@ input AddUserInput {
   availability: [IntervalInput]
   username: String
 }
-type UserData {
-  userId: String
-  timezone: String
-  availability: [Interval]
-  username: String
 
-}
 input IntervalInput {
-  start: Int
-  end: Int
-  timeZone: String
-  day: String
-}
-type Interval {
   start: Int
   end: Int
   timeZone: String

@@ -96,7 +96,7 @@ export default class Availability extends VuexModule {
   }
 }
 
-function getIntervalForTime(
+export function getIntervalForTime(
   hourStart: number,
   hourEnd: number,
   timeZone: string

@@ -71,17 +71,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import { DateTime, Interval } from 'luxon'
 import { ApexOptions } from 'apexcharts'
 import _ from 'lodash'
 import { Series } from '~/pages/index.vue'
 
-// type ChartData = {
-// {
-//   x: any; y: any
-// }
-// }
+const myschedule = namespace('myschedule')
 
 @Component({
   filters: {
@@ -95,11 +91,20 @@ export default class Schedule extends Vue {
   start: string = '08:00'
   end: string = '12:00'
 
-  day: string = 'mon'
+  day: string = 'Mon'
   tz: string = 'PST'
   type: string = 'free'
 
   avail: Map<string, Interval[]> = new Map<string, Interval[]>()
+
+  @myschedule.State
+  private series
+
+  @myschedule.Action
+  private loadSchedule
+
+  @myschedule.Action
+  private addAvailability
 
   options: ApexOptions = {
     chart: {
@@ -139,26 +144,9 @@ export default class Schedule extends Vue {
     },
   }
 
-  series: Series[] = [
-    {
-      data: [],
-    },
-  ]
-
-  weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
-
+  weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
   mounted() {
-    for (let i = 0; i < 7; i++) {
-      // const start = DateTime.local(2021, 1, 1, 8, 0)
-      // const end = DateTime.local(2021, 1, 1, 10, 0)
-
-      if (!this.avail.has(this.weekdays[i])) {
-        this.avail.set(this.weekdays[i], [])
-      }
-      // this.avail.get(this.weekdays[i]).push(Interval.fromDateTimes(start, end))
-    }
-
-    this.updateChart()
+    this.loadSchedule(this.$apollo)
   }
 
   deleteAvailability(day: string, interval: Interval) {
@@ -173,66 +161,18 @@ export default class Schedule extends Vue {
   }
 
   addRange() {
-    const start = DateTime.fromFormat(this.start, 'hh:mm')
-      .set({
-        day: 1,
-        year: 2021,
-        month: 1,
-      })
-      .setZone('PST')
+    this.addAvailability({
+      apollo: this.$apollo,
+      start: parseInt(
+        DateTime.fromFormat(this.start, 'hh:mm').toFormat('hhmm')
+      ),
+      end: parseInt(DateTime.fromFormat(this.end, 'hh:mm').toFormat('hhmm')),
+      timezone: this.tz,
+      day: this.day,
+    })
+    this.loadSchedule(this.$apollo)
 
-    const newInterval = Interval.fromDateTimes(
-      start,
-      DateTime.fromFormat(this.end, 'hh:mm')
-        .set({
-          day: 1,
-          year: 2021,
-          month: 1,
-        })
-        .setZone('PST')
-    )
-
-    // // const isOverlap = _.find(this.avail.get(this.day), (val) => {
-    // //   return newInterval.overlaps(val)
-    // })
-
-    const currentIntervals = this.avail.get(this.day) as Interval[]
-    currentIntervals.push(newInterval)
-    this.avail.set(this.day, Interval.merge(currentIntervals))
-    this.updateChart()
-  }
-
-  private updateChart() {
-    const x = this.series.slice()
-
-    for (const day of this.avail.keys()) {
-      for (const interval of this.avail?.get(day) as Interval[]) {
-        x[0].data.push({
-          x: day,
-          y: [
-            interval.start.set({ day: 1 }).toJSDate().getTime(),
-            interval.end.set({ day: 1 }).toJSDate().getTime(),
-          ],
-        })
-      }
-      if (this.avail.get(day)?.length === 0) {
-        // x.push({
-        //   name: 'test',
-        //   data: [
-        //     {
-        //       x: day,
-        //       y: [DateTime.local(2021, 1, 1), DateTime.local(2021, 1, 1)],
-        //     },
-        //   ],
-        // })
-        // x[0].data.push({
-        //   x: day,
-        //   y: [DateTime.local(2021, 1, 1), DateTime.local(2021, 1, 1)],
-        // } as ChartData)
-      }
-    }
-    this.forceRenderNumber++
-    this.series = x
+    //
   }
 }
 </script>

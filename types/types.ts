@@ -270,10 +270,10 @@ export enum ErrorType {
 
 export type Interval = {
   __typename?: 'Interval';
-  start?: Maybe<Scalars['Int']>;
-  end?: Maybe<Scalars['Int']>;
-  timeZone?: Maybe<Scalars['String']>;
-  day?: Maybe<Scalars['String']>;
+  start: Scalars['Int'];
+  end: Scalars['Int'];
+  timeZone: Scalars['String'];
+  day: Scalars['String'];
 };
 
 export type IntervalInput = {
@@ -285,17 +285,19 @@ export type IntervalInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addUser?: Maybe<AddUserPayload>;
+  addAvailabilityToUser?: Maybe<UserData>;
 };
 
 
-export type MutationAddUserArgs = {
-  input: AddUserInput;
+export type MutationAddAvailabilityToUserArgs = {
+  username?: Maybe<Scalars['String']>;
+  availability?: Maybe<IntervalInput>;
 };
 
 export type Query = {
   __typename?: 'Query';
   users?: Maybe<Array<Maybe<UserData>>>;
+  myschedule?: Maybe<UserData>;
   _service?: Maybe<_Service>;
 };
 
@@ -306,10 +308,10 @@ export type QueryUsersArgs = {
 
 export type UserData = {
   __typename?: 'UserData';
-  userId?: Maybe<Scalars['String']>;
-  timezone?: Maybe<Scalars['String']>;
-  availability?: Maybe<Array<Maybe<Interval>>>;
-  username?: Maybe<Scalars['String']>;
+  userId: Scalars['String'];
+  timezone: Scalars['String'];
+  availability: Array<Maybe<Interval>>;
+  username: Scalars['String'];
 };
 
 

@@ -31,15 +31,6 @@ const availability = namespace('availability')
 
 @Component
 export default class Index extends Vue {
-  @availability.State
-  private availabilityMap!: Map<string, Map<string, Interval[]>>
-
-  @availability.State
-  private stateCounter!: number
-
-  @availability.Action
-  private loadAvailability!: any
-
   options: ApexOptions = {
     chart: {
       type: 'rangeBar',
@@ -86,6 +77,9 @@ export default class Index extends Vue {
         .getTime(),
     },
   }
+
+  @availability.Action
+  private loadAvailability!: any
 
   @availability.State
   private series!: Series[]
