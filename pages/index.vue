@@ -2,7 +2,17 @@
   <v-container>
     <v-card>
       <v-card-title>Availability</v-card-title>
+
       <v-card-text>
+        {{ series }}
+        <!--        <v-row v-for="serie in series.keys()" v-if="false">-->
+        <!--          <v-col v-for="data of series[serie]">-->
+        <!--            <v-container v-for="x in data"-->
+        <!--              >{{ x.y[0] | humanDate }} = {{ x.y[1] | humanDate }}</v-container-->
+        <!--            >-->
+        <!--          </v-col>-->
+        <!--        </v-row>-->
+
         <client-only>
           <apexchart
             ref="chart"
@@ -20,7 +30,7 @@
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import { ApexOptions } from 'apexcharts'
-import { DateTime, Duration, Interval } from 'luxon'
+import { DateTime, Duration } from 'luxon'
 
 export interface SeriesData {}
 export interface Series {
@@ -29,7 +39,13 @@ export interface Series {
 
 const availability = namespace('availability')
 
-@Component
+@Component({
+  filters: {
+    humanDate(date: number) {
+      return DateTime.fromMillis(date).toISO()
+    },
+  },
+})
 export default class Index extends Vue {
   options: ApexOptions = {
     chart: {
@@ -62,14 +78,14 @@ export default class Index extends Vue {
         },
       },
       min: DateTime.local()
-        .minus(Duration.fromObject({ hour: 1 }))
+        .minus(Duration.fromObject({ hour: 12 }))
         .set({
           minute: 0,
         })
         .toJSDate()
         .getTime(),
       max: DateTime.local()
-        .plus(Duration.fromObject({ hour: 6 }))
+        .plus(Duration.fromObject({ hour: 12 }))
         .set({
           minute: 0,
         })
