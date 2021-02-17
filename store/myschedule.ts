@@ -2,7 +2,7 @@ import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { DateTime, Duration, Interval } from 'luxon'
 import DollarApollo from 'vue-apollo'
 import gql from 'graphql-tag'
-import { Series } from '~/pages/index.vue'
+import { Series, SeriesData } from '~/pages/index.vue'
 import { UserData } from '~/types/types'
 import { getIntervalForTime } from '~/store/availability'
 
@@ -111,7 +111,19 @@ export default class MySchedule extends VuexModule {
         y: [start.set({ day: 1, month: 1 }), end.set({ day: 1, month: 1 })],
       })
     }
-    // }
+    series[0].data.sort((a: SeriesData, b: SeriesData) => {
+      return this.weekdays[a.x] - this.weekdays[b.x]
+    })
     this.series = series
+  }
+
+  weekdays = {
+    Mon: 1,
+    Tue: 2,
+    Wed: 3,
+    Thu: 4,
+    Fri: 5,
+    Sat: 6,
+    Sun: 7,
   }
 }
