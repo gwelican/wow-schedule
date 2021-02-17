@@ -1,10 +1,13 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
-import { DateTime, Duration, Interval } from 'luxon'
 import DollarApollo from 'vue-apollo'
 import gql from 'graphql-tag'
 import { Series, SeriesData } from '~/pages/index.vue'
 import { UserData } from '~/types/types'
 import { getIntervalForTime } from '~/store/availability'
+
+interface WeekDays {
+  [key: string]: number
+}
 
 @Module({
   stateFactory: true,
@@ -21,10 +24,12 @@ export default class MySchedule extends VuexModule {
         query UserData {
           myschedule {
             availability {
-              start
-              end
               day
-              timeZone
+              intervals {
+                end
+                start
+                timeZone
+              }
             }
           }
         }
@@ -52,10 +57,10 @@ export default class MySchedule extends VuexModule {
       mutation: gql`
         mutation(
           $username: String
-          $start: Int
-          $end: Int
-          $timeZone: String
-          $day: String
+          $start: Int!
+          $end: Int!
+          $timeZone: String!
+          $day: String!
         ) {
           addAvailabilityToUser(
             username: $username
@@ -69,9 +74,11 @@ export default class MySchedule extends VuexModule {
             username
             availability {
               day
-              end
-              start
-              timeZone
+              intervals {
+                start
+                end
+                timeZone
+              }
             }
           }
         }
@@ -89,27 +96,20 @@ export default class MySchedule extends VuexModule {
   }
 
   @Mutation
-  generateSeries(schedules: UserData) {
+  generateSeries(data: UserData) {
     const series: Series[] = [{ data: [] }]
 
-    // for (const schedule of schedules) {
-    for (const availability of schedules.availability) {
-      const start = DateTime.fromObject({
-        hour: availability.start / 100,
-        minute: 0,
-        zone: availability.timeZone,
-      })
-
-      const end = DateTime.fromObject({
-        hour: availability.end / 100,
-        minute: 0,
-        zone: availability.timeZone,
-      })
-
-      series[0].data.push({
-        x: availability.day,
-        y: [start.set({ day: 1, month: 1 }), end.set({ day: 1, month: 1 })],
-      })
+    for (const availability of data.availability) {
+      for (const data of availability.intervals) {
+        const interval = getIntervalForTime(data.start, data.end, data.timeZone)
+        series[0].data.push({
+          x: availability.day,
+          y: [
+            interval.start.set({ day: 1, month: 1 }),
+            interval.end.set({ day: 1, month: 1 }),
+          ],
+        })
+      }
     }
     series[0].data.sort((a: SeriesData, b: SeriesData) => {
       return this.weekdays[a.x] - this.weekdays[b.x]
@@ -117,7 +117,7 @@ export default class MySchedule extends VuexModule {
     this.series = series
   }
 
-  weekdays = {
+  weekdays: WeekDays = {
     Mon: 1,
     Tue: 2,
     Wed: 3,

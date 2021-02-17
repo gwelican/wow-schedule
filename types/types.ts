@@ -29,6 +29,12 @@ export type AddUserPayload = {
   userId?: Maybe<Scalars['String']>;
 };
 
+export type Availability = {
+  __typename?: 'Availability';
+  day: Scalars['String'];
+  intervals: Array<Interval>;
+};
+
 export enum ErrorDetail {
   /**
    * Unknown error.
@@ -277,10 +283,10 @@ export type Interval = {
 };
 
 export type IntervalInput = {
-  start?: Maybe<Scalars['Int']>;
-  end?: Maybe<Scalars['Int']>;
-  timeZone?: Maybe<Scalars['String']>;
-  day?: Maybe<Scalars['String']>;
+  start: Scalars['Int'];
+  end: Scalars['Int'];
+  timeZone: Scalars['String'];
+  day: Scalars['String'];
 };
 
 export type Mutation = {
@@ -310,7 +316,7 @@ export type UserData = {
   __typename?: 'UserData';
   userId: Scalars['String'];
   timezone: Scalars['String'];
-  availability: Array<Maybe<Interval>>;
+  availability: Array<Availability>;
   username: Scalars['String'];
 };
 

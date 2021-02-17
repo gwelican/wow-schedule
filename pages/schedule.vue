@@ -98,13 +98,13 @@ export default class Schedule extends Vue {
   avail: Map<string, Interval[]> = new Map<string, Interval[]>()
 
   @myschedule.State
-  private series
+  private series!: Series[]
 
   @myschedule.Action
-  private loadSchedule
+  private loadSchedule: any
 
   @myschedule.Action
-  private addAvailability
+  private addAvailability: any
 
   options: ApexOptions = {
     chart: {
@@ -156,8 +156,6 @@ export default class Schedule extends Vue {
         interval.equals(v)
       })
     )
-
-    this.updateChart()
   }
 
   addRange() {

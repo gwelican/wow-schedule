@@ -6,8 +6,13 @@ type Query {
 type UserData {
   userId: String!
   timezone: String!
-  availability: [Interval]!
+  availability: [Availability!]!
   username: String!
+}
+
+type Availability {
+  day: String!
+  intervals: [Interval!]!
 }
 
 type Interval {
@@ -32,8 +37,8 @@ input AddUserInput {
 }
 
 input IntervalInput {
-  start: Int
-  end: Int
-  timeZone: String
-  day: String
+  start: Int!
+  end: Int!
+  timeZone: String!
+  day: String!
 }
