@@ -27,7 +27,7 @@
     "moment": "^2.29.1",
     "moment-range": "^4.0.2",
     "moment-timezone": "^0.5.33",
-    "nuxt": "^2.14.12",
+    "nuxt": "^2.15.0",
     "nuxt-property-decorator": "^2.9.1",
     "vue-apexcharts": "^1.6.0"
   },
