@@ -18,7 +18,6 @@ export default class MySchedule extends VuexModule {
 
   @Action
   async loadSchedule(apollo: DollarApollo) {
-    // const map = new Map<string, Map<string, Interval[]>>()
     const response = await apollo.query({
       query: gql`
         query UserData {

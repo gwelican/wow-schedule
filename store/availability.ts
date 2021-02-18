@@ -6,6 +6,8 @@ import gql from 'graphql-tag'
 import { UserData } from '~/types/types'
 import { Series } from '~/pages/index.vue'
 
+type AvailabilityMap = Map<string, Map<string, Interval[]>>
+
 @Module({
   stateFactory: true,
   namespaced: true,
@@ -35,7 +37,6 @@ export default class Availability extends VuexModule {
       `,
     })
 
-    console.log(response)
     const map = convertResponseToMap(response.data.users as UserData[])
 
     const series = convertMapToSeries(map)
@@ -68,9 +69,7 @@ export function getIntervalForTime(
   )
 }
 
-function convertResponseToMap(
-  users: UserData[]
-): Map<string, Map<string, Interval[]>> {
+function convertResponseToMap(users: UserData[]): AvailabilityMap {
   const map = new Map<string, Map<string, Interval[]>>()
 
   for (const user of users) {
@@ -91,9 +90,7 @@ function convertResponseToMap(
   return map
 }
 
-function convertMapToSeries(
-  map: Map<string, Map<string, Interval[]>>
-): Series[] {
+function convertMapToSeries(map: AvailabilityMap): Series[] {
   const series: Series[] = [
     {
       data: [],
