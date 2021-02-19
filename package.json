@@ -20,7 +20,7 @@
     "@nuxtjs/firebase": "^7.4.1",
     "apexcharts": "^3.25.0",
     "core-js": "^3.8.3",
-    "firebase": "^8.2.7",
+    "firebase": "^8.2.8",
     "graphql-tag": "^2.11.0",
     "lodash": "^4.17.20",
     "luxon": "^1.26.0",
