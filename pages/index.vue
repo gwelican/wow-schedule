@@ -2,7 +2,8 @@
   <v-container>
     <v-card>
       <v-card-title>Availability</v-card-title>
-
+      <v-btn v-if="$auth.loggedIn === false" text to="/login">Login</v-btn>
+      {{ $auth.loggedIn }}
       <v-card-text>
         {{ series }}
         <!--        <v-row v-for="serie in series.keys()" v-if="false">-->
@@ -48,6 +49,7 @@ const availability = namespace('availability')
       return DateTime.fromMillis(date).toISO()
     },
   },
+  // middleware: 'authenticated',
 })
 export default class Index extends Vue {
   options: ApexOptions = {

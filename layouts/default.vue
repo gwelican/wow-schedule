@@ -39,6 +39,11 @@ export default class Default extends Vue {
       title: 'Who is available',
       to: '/',
     },
+    {
+      icon: 'mdi-chart-bubble',
+      title: 'Login',
+      to: '/login',
+    },
   ]
 }
 </script>
