@@ -67,7 +67,10 @@ const availability = namespace('availability')
   middleware: 'authenticated',
 })
 export default class Index extends Vue {
-  options: ApexOptions = {
+  private forceRedrawCounter = 1
+  private daysToShow = 1
+
+  private options: ApexOptions = {
     chart: {
       type: 'rangeBar',
       zoom: { enabled: false },
@@ -142,9 +145,6 @@ export default class Index extends Vue {
         .getTime(),
     },
   }
-
-  private forceRedrawCounter = 1
-  private daysToShow = 1
 
   @Watch('daysToShow')
   DaysToShowChange() {
