@@ -73,6 +73,35 @@ export default class Index extends Vue {
         },
       ],
     },
+    tooltip: {
+      enabled: true,
+      y: {
+        formatter(_, { seriesIndex, dataPointIndex, w }): string {
+          const start = DateTime.fromMillis(
+            w.config.series[seriesIndex].data[dataPointIndex].y[0]
+          )
+          const end = DateTime.fromMillis(
+            w.config.series[seriesIndex].data[dataPointIndex].y[1]
+          )
+          return (
+            w.config.series[seriesIndex].data[dataPointIndex].x +
+            ': ' +
+            start.toFormat('ccc HH:mm') +
+            ' - ' +
+            end.toFormat('ccc HH:mm')
+          )
+        },
+      },
+    },
+    // dataLabels: {
+    //   enabled: true,
+    //   formatter(
+    //     value: number,
+    //     { seriesIndex, dataPointIndex, w }
+    //   ): string | number {
+    //     return w.config.series[seriesIndex].name + ': ' + value
+    //   },
+    // },
     xaxis: {
       tickAmount: 7,
       tickPlacement: 'on',
