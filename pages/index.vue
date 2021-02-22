@@ -148,14 +148,14 @@ export default class Index extends Vue {
 
   @Watch('daysToShow')
   DaysToShowChange() {
-    this.options.xaxis.min = DateTime.local()
+    this.options!.xaxis!.min = DateTime.local()
       .set({
         minute: 0,
       })
       .toJSDate()
       .getTime()
 
-    this.options.xaxis.max = DateTime.local()
+    this.options!.xaxis!.max = DateTime.local()
       .minus(Duration.fromObject({ days: this.daysToShow }))
       .set({
         minute: 0,
