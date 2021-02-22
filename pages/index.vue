@@ -3,9 +3,9 @@
     <v-card>
       <v-card-title>Availability</v-card-title>
       <v-btn v-if="$auth.loggedIn === false" text to="/login">Login</v-btn>
-      {{ $auth.loggedIn }}
+      <!--      {{ $auth.loggedIn }}-->
       <v-card-text>
-        {{ series }}
+        <!--        {{ series }}-->
         <!--        <v-row v-for="serie in series.keys()" v-if="false">-->
         <!--          <v-col v-for="data of series[serie]">-->
         <!--            <v-container v-for="x in data"-->
