@@ -83,14 +83,14 @@ export default class Index extends Vue {
         },
       },
       min: DateTime.local()
-        .minus(Duration.fromObject({ hour: 12 }))
+        .minus(Duration.fromObject({ days: 4 }))
         .set({
           minute: 0,
         })
         .toJSDate()
         .getTime(),
       max: DateTime.local()
-        .plus(Duration.fromObject({ hour: 12 }))
+        .plus(Duration.fromObject({ days: 3 }))
         .set({
           minute: 0,
         })

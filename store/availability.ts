@@ -97,7 +97,7 @@ function convertMapToSeries(map: AvailabilityMap): Series[] {
     },
   ]
 
-  const offsets = [-24, 0, 24]
+  const offsets = [-72, -48, -24, 0, 24, 48, 72]
 
   for (const user of map.keys()) {
     const userAvailability = map.get(user)!

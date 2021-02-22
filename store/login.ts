@@ -6,5 +6,5 @@ import { Module, VuexModule } from 'vuex-module-decorators'
 })
 export default class Login extends VuexModule {
   isLoggedIn = false
-  accessToken: string
+  accessToken: string = ''
 }
