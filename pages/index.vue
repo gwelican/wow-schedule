@@ -2,9 +2,19 @@
   <v-container>
     <v-card>
       <v-card-title>Availability</v-card-title>
-      <v-btn v-if="$auth.loggedIn === false" text to="/login">Login</v-btn>
+      <!--      <v-btn v-if="$auth.loggedIn === false" text to="/login">Login</v-btn>-->
       <!--      {{ $auth.loggedIn }}-->
       <v-card-text>
+        <v-row>
+          <v-col cols="1">
+            <v-select
+              v-model="daysToShow"
+              :items="[1, 2, 3, 4, 5, 6, 7]"
+              label="Days to show"
+            >
+            </v-select
+          ></v-col>
+        </v-row>
         <!--        {{ series }}-->
         <!--        <v-row v-for="serie in series.keys()" v-if="false">-->
         <!--          <v-col v-for="data of series[serie]">-->
@@ -14,22 +24,26 @@
         <!--          </v-col>-->
         <!--        </v-row>-->
 
-        <client-only>
-          <apexchart
-            ref="chart"
-            type="rangeBar"
-            :options="options"
-            :series="series"
-            height="200%"
-          ></apexchart>
-        </client-only>
+        <v-row :key="forceRedrawCounter">
+          <v-col>
+            <client-only :key="forceRedrawCounter">
+              <apexchart
+                ref="chart"
+                type="rangeBar"
+                :options="options"
+                :series="series"
+                height="200%"
+              ></apexchart>
+            </client-only>
+          </v-col>
+        </v-row>
       </v-card-text>
     </v-card>
   </v-container>
 </template>
 
 <script lang="ts">
-import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
 import { ApexOptions } from 'apexcharts'
 import { DateTime, Duration } from 'luxon'
 
@@ -37,6 +51,7 @@ export interface SeriesData {
   x: string
   y: number[] | DateTime[]
 }
+
 export interface Series {
   data: SeriesData[]
 }
@@ -112,20 +127,43 @@ export default class Index extends Vue {
         },
       },
       min: DateTime.local()
-        .minus(Duration.fromObject({ days: 4 }))
+        .minus(Duration.fromObject({ days: this.daysToShow }))
         .set({
           minute: 0,
         })
         .toJSDate()
         .getTime(),
       max: DateTime.local()
-        .plus(Duration.fromObject({ days: 3 }))
+        .plus(Duration.fromObject({ days: this.daysToShow }))
         .set({
           minute: 0,
         })
         .toJSDate()
         .getTime(),
     },
+  }
+
+  private forceRedrawCounter = 1
+  private daysToShow = 1
+
+  @Watch('daysToShow')
+  DaysToShowChange() {
+    this.options.xaxis?.min = DateTime.local()
+      .set({
+        minute: 0,
+      })
+      .toJSDate()
+      .getTime()
+
+    this.options.xaxis?.max = DateTime.local()
+      .minus(Duration.fromObject({ days: this.daysToShow }))
+      .set({
+        minute: 0,
+      })
+      .toJSDate()
+      .getTime()
+
+    this.forceRedrawCounter++
   }
 
   @availability.Action
