@@ -49,7 +49,7 @@ const availability = namespace('availability')
       return DateTime.fromMillis(date).toISO()
     },
   },
-  // middleware: 'authenticated',
+  middleware: 'authenticated',
 })
 export default class Index extends Vue {
   options: ApexOptions = {

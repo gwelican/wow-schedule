@@ -162,9 +162,9 @@ export default class Schedule extends Vue {
     this.addAvailability({
       apollo: this.$apollo,
       start: parseInt(
-        DateTime.fromFormat(this.start, 'hh:mm').toFormat('hhmm')
+        DateTime.fromFormat(this.start, 'HH:mm').toFormat('HHmm')
       ),
-      end: parseInt(DateTime.fromFormat(this.end, 'hh:mm').toFormat('hhmm')),
+      end: parseInt(DateTime.fromFormat(this.end, 'HH:mm').toFormat('HHmm')),
       timezone: this.tz,
       day: this.day,
     })

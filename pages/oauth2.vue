@@ -8,7 +8,7 @@ import { Component, Vue } from 'nuxt-property-decorator'
 @Component
 export default class Oauth2 extends Vue {
   mounted() {
-    console.log(this.$route)
+    this.$axios.get(`http://localhost:8080/me`)
   }
 }
 </script>

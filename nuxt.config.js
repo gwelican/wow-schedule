@@ -33,10 +33,14 @@ export default {
   buildModules: [
     // https://go.nuxtjs.dev/typescript
     '@nuxt/typescript-build',
+    // '@nuxtjs/proxy',
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
   ],
 
+  // proxy: {
+  //   '/oauth2': 'http://localhost:8080/login/oauth2/code/battlenet',
+  // },
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
