@@ -20,12 +20,12 @@ export default class Availability extends VuexModule {
     const response = await apollo.query({
       query: gql`
         query UserData {
-          users {
+          availability {
             availability {
               intervals {
                 start
                 end
-                timeZone
+                timezone
               }
               day
             }
@@ -53,18 +53,18 @@ export default class Availability extends VuexModule {
 export function getIntervalForTime(
   hourStart: number,
   hourEnd: number,
-  timeZone: string
+  timezone: string
 ) {
   return Interval.fromDateTimes(
     DateTime.fromObject({
       hour: Math.floor(hourStart / 100),
       minute: Math.floor(hourStart % 100),
-      zone: timeZone,
+      zone: timezone,
     }),
     DateTime.fromObject({
       hour: Math.floor(hourEnd / 100),
       minute: Math.floor(hourEnd % 100),
-      zone: timeZone,
+      zone: timezone,
     })
   )
 }
@@ -79,7 +79,7 @@ function convertResponseToMap(users: UserData[]): AvailabilityMap {
       const intervals = []
       for (const interval of availability.intervals) {
         intervals.push(
-          getIntervalForTime(interval.start, interval.end, interval.timeZone)
+          getIntervalForTime(interval.start, interval.end, interval.timezone)
         )
       }
 

@@ -1,5 +1,5 @@
 type Query {
-  users(titleFilter: String): [UserData]
+  availability: [UserData]
   myschedule: UserData
 }
 
@@ -18,7 +18,7 @@ type Availability {
 type Interval {
   start: Int!
   end: Int!
-  timeZone: String!
+  timezone: String!
   day: String!
 }
 
@@ -39,6 +39,6 @@ input AddUserInput {
 input IntervalInput {
   start: Int!
   end: Int!
-  timeZone: String!
+  timezone: String!
   day: String!
 }

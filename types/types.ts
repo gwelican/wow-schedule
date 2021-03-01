@@ -278,14 +278,14 @@ export type Interval = {
   __typename?: 'Interval';
   start: Scalars['Int'];
   end: Scalars['Int'];
-  timeZone: Scalars['String'];
+  timezone: Scalars['String'];
   day: Scalars['String'];
 };
 
 export type IntervalInput = {
   start: Scalars['Int'];
   end: Scalars['Int'];
-  timeZone: Scalars['String'];
+  timezone: Scalars['String'];
   day: Scalars['String'];
 };
 
@@ -302,14 +302,9 @@ export type MutationAddAvailabilityToUserArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  users?: Maybe<Array<Maybe<UserData>>>;
+  availability?: Maybe<Array<Maybe<UserData>>>;
   myschedule?: Maybe<UserData>;
   _service?: Maybe<_Service>;
-};
-
-
-export type QueryUsersArgs = {
-  titleFilter?: Maybe<Scalars['String']>;
 };
 
 export type UserData = {

@@ -27,7 +27,7 @@ export default class MySchedule extends VuexModule {
               intervals {
                 end
                 start
-                timeZone
+                timezone
               }
             }
           }
@@ -58,13 +58,13 @@ export default class MySchedule extends VuexModule {
           $username: String
           $start: Int!
           $end: Int!
-          $timeZone: String!
+          $timezone: String!
           $day: String!
         ) {
           addAvailabilityToUser(
             username: $username
             availability: {
-              timeZone: $timeZone
+              timezone: $timezone
               day: $day
               start: $start
               end: $end
@@ -76,7 +76,7 @@ export default class MySchedule extends VuexModule {
               intervals {
                 start
                 end
-                timeZone
+                timezone
               }
             }
           }
@@ -86,7 +86,7 @@ export default class MySchedule extends VuexModule {
         day,
         end,
         start,
-        timeZone: timezone,
+        timezone,
         username: 'Gwelican',
       },
     })
@@ -100,7 +100,7 @@ export default class MySchedule extends VuexModule {
 
     for (const availability of data.availability) {
       for (const data of availability.intervals) {
-        const interval = getIntervalForTime(data.start, data.end, data.timeZone)
+        const interval = getIntervalForTime(data.start, data.end, data.timezone)
         series[0].data.push({
           x: availability.day,
           y: [
