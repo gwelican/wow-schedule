@@ -37,7 +37,7 @@ export default class Availability extends VuexModule {
       `,
     })
 
-    const map = convertResponseToMap(response.data.users as UserData[])
+    const map = convertResponseToMap(response.data.availability as UserData[])
 
     const series = convertMapToSeries(map)
 

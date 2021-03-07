@@ -5,7 +5,7 @@ import { Module, Mutation, VuexModule } from 'vuex-module-decorators'
   namespaced: true,
 })
 export default class Login extends VuexModule {
-  accessToken: string = ''
+  accessToken!: string
 
   get isLoggedIn() {
     return this.accessToken && this.accessToken.length > 0

@@ -30,14 +30,12 @@ export default class Oauth2 extends Vue {
       })
 
     console.log('auth done')
-    console.log(x)
     const token = await this.$axios.$get(`http://localhost:8080/oauth2/token`, {
       withCredentials: true,
     })
-    this.$axios.defaults.headers.common = {
-      Authorization: `Bearer ${token}`,
-    }
+    console.log(this)
     this.setAccessToken(token)
+    this.$cookies.set('AccessToken', token)
 
     this.$axios.get('http://localhost:8080/api/me')
   }

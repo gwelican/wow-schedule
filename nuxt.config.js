@@ -44,13 +44,18 @@ export default {
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
+    ['cookie-universal-nuxt', { alias: 'cookies' }],
     '@nuxtjs/axios',
     '@nuxtjs/apollo',
     '@nuxtjs/auth-next',
   ],
 
   auth: {
-    strategies: {},
+    strategies: {
+      local: {
+        endpoints: {},
+      },
+    },
   },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -78,8 +83,8 @@ export default {
   apollo: {
     clientConfigs: {
       default: {
-        httpEndpoint: 'https://wow.gwelican.eu/graphql',
-        // httpEndpoint: 'http://localhost:8080/graphql',
+        // httpEndpoint: 'https://wow.gwelican.eu/graphql',
+        httpEndpoint: 'http://localhost:8080/graphql',
       },
     },
   },
