@@ -54,15 +54,8 @@ export default class MySchedule extends VuexModule {
   }) {
     const response = await apollo.mutate({
       mutation: gql`
-        mutation(
-          $username: String
-          $start: Int!
-          $end: Int!
-          $timezone: String!
-          $day: String!
-        ) {
+        mutation($start: Int!, $end: Int!, $timezone: String!, $day: String!) {
           addAvailabilityToUser(
-            username: $username
             availability: {
               timezone: $timezone
               day: $day
@@ -87,7 +80,6 @@ export default class MySchedule extends VuexModule {
         end,
         start,
         timezone,
-        username: 'Gwelican',
       },
     })
 

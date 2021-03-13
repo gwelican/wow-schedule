@@ -1,5 +1,5 @@
 overwrite: true
-schema: "https://wow.gwelican.eu/graphql"
+schema: "https://wow-data.gwelican.eu/graphql"
 #documents: "apollo/**/*.graphql"
 generates:
   types/graphql.d.ts:

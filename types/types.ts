@@ -21,7 +21,6 @@ export type AddUserInput = {
   userId?: Maybe<Scalars['String']>;
   timezone?: Maybe<Scalars['String']>;
   availability?: Maybe<Array<Maybe<IntervalInput>>>;
-  username?: Maybe<Scalars['String']>;
 };
 
 export type AddUserPayload = {
@@ -262,12 +261,12 @@ export enum ErrorType {
    * Service implementers can use the following guidelines to decide
    * between `FAILED_PRECONDITION` and `UNAVAILABLE`:
    *
-   *   - Use `UNAVAILABLE` if the client can retry just the failing call.
-   *   - Use `FAILED_PRECONDITION` if the client should not retry until
-   *      the system state has been explicitly fixed.  E.g., if an "rmdir"
+   * - Use `UNAVAILABLE` if the client can retry just the failing call.
+   * - Use `FAILED_PRECONDITION` if the client should not retry until
+   * the system state has been explicitly fixed.  E.g., if an "rmdir"
    *      fails because the directory is non-empty, `FAILED_PRECONDITION`
-   *      should be returned since the client should not retry unless
-   *      the files are deleted from the directory.
+   * should be returned since the client should not retry unless
+   * the files are deleted from the directory.
    *
    * HTTP Mapping: 400 Bad Request or 500 Internal Server Error
    */
@@ -296,7 +295,6 @@ export type Mutation = {
 
 
 export type MutationAddAvailabilityToUserArgs = {
-  username?: Maybe<Scalars['String']>;
   availability?: Maybe<IntervalInput>;
 };
 

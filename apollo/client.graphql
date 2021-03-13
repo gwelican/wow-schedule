@@ -23,7 +23,7 @@ type Interval {
 }
 
 type Mutation {
-  addAvailabilityToUser(username: String, availability: IntervalInput ): UserData
+  addAvailabilityToUser(availability: IntervalInput ): UserData
 }
 
 type AddUserPayload {
@@ -33,7 +33,6 @@ input AddUserInput {
   userId: String
   timezone: String
   availability: [IntervalInput]
-  username: String
 }
 
 input IntervalInput {

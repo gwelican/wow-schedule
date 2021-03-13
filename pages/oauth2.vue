@@ -7,18 +7,18 @@ import { Component, namespace, Vue } from 'nuxt-property-decorator'
 
 const qs = require('qs')
 
-const login = namespace('login')
+// const login = namespace('login')
 
 @Component
 export default class Oauth2 extends Vue {
-  @login.Mutation
-  private setAccessToken
+  // @login.Mutation
+  // private setAccessToken!: any
 
   async mounted() {
     console.log('mount')
     const x = await this.$axios
-      .get(
-        `http://localhost:8080/login/oauth2/code/battlenet?${qs.stringify(
+      .$get(
+        `https://wow-login.gwelican.eu/login/oauth2/code/battlenet?${qs.stringify(
           this.$route.query
         )}`,
         {
@@ -29,15 +29,12 @@ export default class Oauth2 extends Vue {
         console.log(err)
       })
 
-    console.log('auth done')
-    const token = await this.$axios.$get(`http://localhost:8080/oauth2/token`, {
-      withCredentials: true,
-    })
-    console.log(this)
-    this.setAccessToken(token)
-    this.$cookies.set('AccessToken', token)
+    const accessToken = x.accessToken
+    const refreshToken = x.refreshToken
+    // this.setAccessToken(accessToken)
 
-    this.$axios.get('http://localhost:8080/api/me')
+    this.$cookies.set('AccessToken', accessToken)
+    this.$cookies.set('RefreshToken', refreshToken)
   }
 }
 </script>

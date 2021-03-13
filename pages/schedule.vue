@@ -85,6 +85,7 @@ const myschedule = namespace('myschedule')
       return DateTime.fromISO(value).toFormat('HH:mm')
     },
   },
+  middleware: 'authenticated',
 })
 export default class Schedule extends Vue {
   private forceRenderNumber: number = 0

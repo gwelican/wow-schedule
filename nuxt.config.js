@@ -85,6 +85,7 @@ export default {
       default: {
         // httpEndpoint: 'https://wow.gwelican.eu/graphql',
         httpEndpoint: 'http://localhost:8080/graphql',
+        tokenName: 'AccessToken',
       },
     },
   },
