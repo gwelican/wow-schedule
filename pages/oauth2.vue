@@ -3,19 +3,13 @@
 </template>
 
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { Component, Vue } from 'nuxt-property-decorator'
 
 const qs = require('qs')
 
-// const login = namespace('login')
-
 @Component
 export default class Oauth2 extends Vue {
-  // @login.Mutation
-  // private setAccessToken!: any
-
   async mounted() {
-    console.log('mount')
     const x = await this.$axios
       .$get(
         `https://wow-login.gwelican.eu/login/oauth2/code/battlenet?${qs.stringify(
