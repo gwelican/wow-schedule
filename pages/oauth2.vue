@@ -30,7 +30,7 @@ export default class Oauth2 extends Vue {
     this.$cookies.set('AccessToken', accessToken)
     this.$cookies.set('RefreshToken', refreshToken)
     try {
-      await this.$auth.setUserToken(accessToken, refreshToken)
+      this.$auth.setUserToken(accessToken, refreshToken)
     } catch (e) {
       // FIXME: log me
       console.log(e)
