@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^1.21.2",
-    "@graphql-codegen/typescript": "^1.21.0",
+    "@graphql-codegen/typescript": "^1.21.1",
     "@graphql-codegen/typescript-graphql-files-modules": "^1.18.1",
     "@graphql-codegen/typescript-operations": "^1.17.14",
     "@nuxt/types": "^2.15.2",
