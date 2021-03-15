@@ -5,6 +5,7 @@ export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
 
+  ssr: false,
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s - wow-schedule',
@@ -33,14 +34,10 @@ export default {
   buildModules: [
     // https://go.nuxtjs.dev/typescript
     '@nuxt/typescript-build',
-    // '@nuxtjs/proxy',
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
   ],
 
-  // proxy: {
-  //   '/oauth2': 'http://localhost:8080/login/oauth2/code/battlenet',
-  // },
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
@@ -51,9 +48,47 @@ export default {
   ],
 
   auth: {
+    redirect: {
+      login: '/login',
+      home: '/schedule',
+      logout: '/',
+    },
+    plugins: ['~/plugins/auth.js'],
     strategies: {
       local: {
-        endpoints: {},
+        scheme: 'refresh',
+        user: {
+          property: 'principal.claims.battle_tag',
+          // autoFetch: true
+        },
+        token: {
+          property: 'accessToken',
+          maxAge: 1800,
+          // type: 'Bearer'
+        },
+        refreshToken: {
+          property: 'refreshToken',
+          data: 'refresh_token',
+          maxAge: 60 * 60 * 24 * 30,
+        },
+        endpoints: {
+          login: {
+            url: 'https://wow-login.gwelican.eu/login/token',
+            method: 'get',
+            withCredentials: true,
+          },
+          refresh: {
+            url: 'https://wow-login.gwelican.eu/login/token',
+            withCredentials: true,
+            method: 'get',
+          },
+          user: {
+            url: 'https://wow-login.gwelican.eu/login/me',
+            method: 'get',
+            withCredentials: true,
+          },
+          logout: false,
+        },
       },
     },
   },
@@ -84,7 +119,6 @@ export default {
     clientConfigs: {
       default: {
         httpEndpoint: 'https://wow-data.gwelican.eu/graphql',
-        // httpEndpoint: 'http://localhost:8080/graphql',
         tokenName: 'AccessToken',
       },
     },

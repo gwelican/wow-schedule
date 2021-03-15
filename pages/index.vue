@@ -2,8 +2,6 @@
   <v-container>
     <v-card>
       <v-card-title>Availability</v-card-title>
-      <!--      <v-btn v-if="$auth.loggedIn === false" text to="/login">Login</v-btn>-->
-      <!--      {{ $auth.loggedIn }}-->
       <v-card-text>
         <v-row>
           <v-col cols="1">
@@ -15,15 +13,6 @@
             </v-select
           ></v-col>
         </v-row>
-        <!--        {{ series }}-->
-        <!--        <v-row v-for="serie in series.keys()" v-if="false">-->
-        <!--          <v-col v-for="data of series[serie]">-->
-        <!--            <v-container v-for="x in data"-->
-        <!--              >{{ x.y[0] | humanDate }} = {{ x.y[1] | humanDate }}</v-container-->
-        <!--            >-->
-        <!--          </v-col>-->
-        <!--        </v-row>-->
-
         <v-row :key="forceRedrawCounter">
           <v-col>
             <client-only :key="forceRedrawCounter">
@@ -46,15 +35,7 @@
 import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
 import { ApexOptions } from 'apexcharts'
 import { DateTime, Duration } from 'luxon'
-
-export interface SeriesData {
-  x: string
-  y: number[] | DateTime[]
-}
-
-export interface Series {
-  data: SeriesData[]
-}
+import { Series } from '~/types/apexHelper'
 
 const availability = namespace('availability')
 
@@ -64,7 +45,7 @@ const availability = namespace('availability')
       return DateTime.fromMillis(date).toISO()
     },
   },
-  middleware: 'authenticated',
+  middleware: 'auth',
 })
 export default class Index extends Vue {
   private forceRedrawCounter = 1
@@ -111,17 +92,9 @@ export default class Index extends Vue {
         },
       },
     },
-    // dataLabels: {
-    //   enabled: true,
-    //   formatter(
-    //     value: number,
-    //     { seriesIndex, dataPointIndex, w }
-    //   ): string | number {
-    //     return w.config.series[seriesIndex].name + ': ' + value
-    //   },
-    // },
+
     xaxis: {
-      tickAmount: 7,
+      tickAmount: 6,
       tickPlacement: 'on',
       type: 'datetime',
       labels: {
@@ -130,7 +103,6 @@ export default class Index extends Vue {
         },
       },
       min: DateTime.local()
-        .minus(Duration.fromObject({ days: this.daysToShow }))
         .set({
           minute: 0,
         })
@@ -148,6 +120,7 @@ export default class Index extends Vue {
 
   @Watch('daysToShow')
   DaysToShowChange() {
+    // this.$auth.setUserToken()
     this.options!.xaxis!.min = DateTime.local()
       .set({
         minute: 0,
@@ -156,12 +129,14 @@ export default class Index extends Vue {
       .getTime()
 
     this.options!.xaxis!.max = DateTime.local()
-      .minus(Duration.fromObject({ days: this.daysToShow }))
+      .plus(Duration.fromObject({ days: this.daysToShow }))
       .set({
         minute: 0,
       })
       .toJSDate()
       .getTime()
+
+    this.options!.xaxis!.tickAmount = this.daysToShow * 4
 
     this.forceRedrawCounter++
   }

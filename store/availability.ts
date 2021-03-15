@@ -1,10 +1,10 @@
-import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
+import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import { DateTime, Duration, Interval } from 'luxon'
 import DollarApollo from 'vue-apollo'
 import gql from 'graphql-tag'
 
 import { UserData } from '~/types/types'
-import { Series } from '~/pages/index.vue'
+import { Series } from '~/types/apexHelper'
 
 type AvailabilityMap = Map<string, Map<string, Interval[]>>
 

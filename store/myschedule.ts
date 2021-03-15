@@ -1,9 +1,9 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import DollarApollo from 'vue-apollo'
 import gql from 'graphql-tag'
-import { Series, SeriesData } from '~/pages/index.vue'
 import { UserData } from '~/types/types'
 import { getIntervalForTime } from '~/store/availability'
+import { Series, SeriesData } from '~/types/apexHelper'
 
 interface WeekDays {
   [key: string]: number

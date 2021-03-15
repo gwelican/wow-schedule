@@ -75,7 +75,7 @@ import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import { DateTime, Interval } from 'luxon'
 import { ApexOptions } from 'apexcharts'
 import _ from 'lodash'
-import { Series } from '~/pages/index.vue'
+import { Series } from '~/types/apexHelper'
 
 const myschedule = namespace('myschedule')
 
@@ -85,7 +85,7 @@ const myschedule = namespace('myschedule')
       return DateTime.fromISO(value).toFormat('HH:mm')
     },
   },
-  middleware: 'authenticated',
+  middleware: 'auth',
 })
 export default class Schedule extends Vue {
   private forceRenderNumber: number = 0
