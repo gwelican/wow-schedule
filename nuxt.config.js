@@ -50,7 +50,7 @@ export default {
   auth: {
     redirect: {
       login: '/login',
-      home: '/schedule',
+      home: '/my-schedule',
       logout: '/',
     },
     plugins: ['~/plugins/auth.js'],
