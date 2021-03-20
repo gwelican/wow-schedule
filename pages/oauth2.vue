@@ -36,7 +36,10 @@ export default class Oauth2 extends Vue {
       console.log(e)
     }
 
-    await this.$router.push('/')
+    await this.$router.replace({
+      path: '/',
+      query: null,
+    })
   }
 }
 </script>
