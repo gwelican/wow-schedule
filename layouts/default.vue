@@ -15,9 +15,16 @@
           </v-card>
         </v-tab>
       </v-tabs>
-      <v-card v-if="$auth.loggedIn">
-        {{ $auth.user }}
-      </v-card>
+      <v-menu offset-y>
+        <template #activator="{ on, attrs }">
+          <v-btn v-bind="attrs" v-on="on">{{ $auth.user }}</v-btn>
+        </template>
+        <v-list>
+          <v-list-item>
+            <v-list-item-content> User settings(todo) </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-menu>
 
       <v-btn v-if="$auth.loggedIn" @click="logout"
         ><v-icon>mdi-logout</v-icon></v-btn

@@ -82,11 +82,12 @@ export default {
             withCredentials: true,
             method: 'get',
           },
-          user: {
-            url: 'https://wow-login.gwelican.eu/login/me',
-            method: 'get',
-            withCredentials: true,
-          },
+          user: false,
+          // user: {
+          //   url: 'https://wow-login.gwelican.eu/login/me',
+          //   method: 'get',
+          //   withCredentials: true,
+          // },
           logout: false,
         },
       },
