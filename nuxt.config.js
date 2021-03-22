@@ -25,7 +25,7 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [{ src: '~/plugins/apexcharts', ssr: false }],
+  plugins: [{ src: '~/plugins/apexcharts', ssr: false }, '~/plugins/auth'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -44,55 +44,54 @@ export default {
     ['cookie-universal-nuxt', { alias: 'cookies' }],
     '@nuxtjs/axios',
     '@nuxtjs/apollo',
-    '@nuxtjs/auth-next',
+    // '@nuxtjs/auth-next',
   ],
 
-  auth: {
-    redirect: {
-      login: '/login',
-      home: '/my-schedule',
-      logout: '/',
-    },
-    plugins: ['~/plugins/auth.js'],
-    strategies: {
-      local: {
-        scheme: 'refresh',
-        user: {
-          property: 'principal.claims.battle_tag',
-          // autoFetch: true
-        },
-        token: {
-          property: 'accessToken',
-          maxAge: 1800,
-          // type: 'Bearer'
-        },
-        refreshToken: {
-          property: 'refreshToken',
-          data: 'refresh_token',
-          maxAge: 60 * 60 * 24 * 30,
-        },
-        endpoints: {
-          login: {
-            url: 'https://wow-login.gwelican.eu/login/token',
-            method: 'get',
-            withCredentials: true,
-          },
-          refresh: {
-            url: 'https://wow-login.gwelican.eu/login/token',
-            withCredentials: true,
-            method: 'get',
-          },
-          user: false,
-          // user: {
-          //   url: 'https://wow-login.gwelican.eu/login/me',
-          //   method: 'get',
-          //   withCredentials: true,
-          // },
-          logout: false,
-        },
-      },
-    },
-  },
+  // auth: {
+  //   redirect: {
+  //     login: '/login',
+  //     home: '/my-schedule',
+  //     logout: '/',
+  //   },
+  //   plugins: ['~/plugins/auth.ts'],
+  //   strategies: {
+  //     local: {
+  //       scheme: 'refresh',
+  //       user: {
+  //         property: 'principal.claims.battle_tag',
+  //         // autoFetch: true
+  //       },
+  //       token: {
+  //         property: 'accessToken',
+  //         maxAge: 1800,
+  //         // type: 'Bearer'
+  //       },
+  //       refreshToken: {
+  //         property: 'refreshToken',
+  //         data: 'refresh_token',
+  //         maxAge: 60 * 60 * 24 * 30,
+  //       },
+  //       endpoints: {
+  //         login: {
+  //           url: 'https://wow-login.gwelican.eu/login/token',
+  //           method: 'get',
+  //           withCredentials: true,
+  //         },
+  //         refresh: {
+  //           url: 'https://wow-login.gwelican.eu/login/token',
+  //           withCredentials: true,
+  //           method: 'get',
+  //         },
+  //         user: {
+  //           url: 'https://wow-login.gwelican.eu/login/me',
+  //           method: 'get',
+  //           withCredentials: true,
+  //         },
+  //         logout: false,
+  //       },
+  //     },
+  //   },
+  // },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {},
@@ -119,7 +118,10 @@ export default {
   apollo: {
     clientConfigs: {
       default: {
-        httpEndpoint: 'https://wow-data.gwelican.eu/graphql',
+        httpEndpoint:
+          process.env.NODE_ENV === 'production'
+            ? 'https://wow-data.gwelican.eu/graphql'
+            : 'http://localhost:8081/graphql',
         tokenName: 'AccessToken',
       },
     },
@@ -136,4 +138,14 @@ export default {
       }),
     ],
   },
+  publicRuntimeConfig: {
+    LOGIN_URL:
+      process.env.NODE_ENV === 'production'
+        ? 'https://wow-login.gwelican.eu'
+        : 'http://localhost:8080',
+    DATA_URL: process.env.NODE_ENV
+      ? 'https://wow-data.gwelican.eu'
+      : 'http://localhost:8081',
+  },
+  privateRuntimeConfig: {},
 }

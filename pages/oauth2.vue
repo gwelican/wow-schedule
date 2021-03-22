@@ -3,16 +3,23 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
 
 const qs = require('qs')
+const token = namespace('token')
 
 @Component
 export default class Oauth2 extends Vue {
+  @token.Action('saveAccessToken')
+  private saveAccessToken: any
+
+  @token.Action('saveRefreshToken')
+  private saveRefreshToken: any
+
   async mounted() {
     const loginTokens = await this.$axios
       .$get(
-        `https://wow-login.gwelican.eu/login/oauth2/code/battlenet?${qs.stringify(
+        `${this.$config.LOGIN_URL}/login/oauth2/code/battlenet?${qs.stringify(
           this.$route.query
         )}`,
         {
@@ -27,18 +34,15 @@ export default class Oauth2 extends Vue {
     const accessToken = loginTokens.accessToken
     const refreshToken = loginTokens.refreshToken
 
+    this.saveAccessToken(accessToken)
+    this.saveRefreshToken(refreshToken)
+
     this.$cookies.set('AccessToken', accessToken)
     this.$cookies.set('RefreshToken', refreshToken)
-    try {
-      this.$auth.setUserToken(accessToken, refreshToken)
-    } catch (e) {
-      // FIXME: log me
-      console.log(e)
-    }
 
     await this.$router.replace({
       path: '/',
-      query: null,
+      query: {},
     })
   }
 }

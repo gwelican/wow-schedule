@@ -15,9 +15,10 @@
           </v-card>
         </v-tab>
       </v-tabs>
-      <v-menu offset-y>
+
+      <v-menu v-if="$store.state.token.loggedIn" offset-y>
         <template #activator="{ on, attrs }">
-          <v-btn v-bind="attrs" v-on="on">{{ $auth.user }}</v-btn>
+          <v-btn v-bind="attrs" v-on="on">{{ user }}</v-btn>
         </template>
         <v-list>
           <v-list-item>
@@ -26,9 +27,7 @@
         </v-list>
       </v-menu>
 
-      <v-btn v-if="$auth.loggedIn" @click="logout"
-        ><v-icon>mdi-logout</v-icon></v-btn
-      >
+      <v-btn v-if="loggedIn" @click="logout"><v-icon>mdi-logout</v-icon></v-btn>
     </v-app-bar>
     <v-main>
       <v-container>
@@ -43,16 +42,26 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
 
+const token = namespace('token')
 @Component
 export default class Default extends Vue {
+  @token.State
+  private user
+
+  @token.State
+  private loggedIn
+
+  @token.Action('clearTokens')
+  private clearTokens: any
+
   async logout() {
     this.$cookies.remove('AccessToken')
     this.$cookies.remove('RefreshToken')
 
+    this.clearTokens()
     await this.$router.push('/login')
-    await this.$auth.logout('local')
   }
 
   private items = [

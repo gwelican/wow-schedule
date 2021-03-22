@@ -45,7 +45,7 @@ const availability = namespace('availability')
       return DateTime.fromMillis(date).toISO()
     },
   },
-  middleware: 'auth',
+  middleware: ['auth.middleware'],
 })
 export default class Index extends Vue {
   private forceRedrawCounter = 1
@@ -120,7 +120,6 @@ export default class Index extends Vue {
 
   @Watch('daysToShow')
   DaysToShowChange() {
-    // this.$auth.setUserToken()
     this.options!.xaxis!.min = DateTime.local()
       .set({
         minute: 0,

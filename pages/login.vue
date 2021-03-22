@@ -8,9 +8,7 @@
           >
           <v-card-text>Please log in</v-card-text>
           <v-card-actions class="justify-center">
-            <a
-              href="https://wow-login.gwelican.eu/oauth2/authorization/battlenet"
-            >
+            <a :href="`${$config.LOGIN_URL}/oauth2/authorization/battlenet`">
               Login
             </a>
           </v-card-actions>
@@ -30,14 +28,15 @@ import { DateTime } from 'luxon'
       return DateTime.fromMillis(date).toISO()
     },
   },
-  middleware: 'auth',
 })
 export default class Login extends Vue {
-  login2() {
-    // this.$auth
-    // this.$auth.refreshTokens()
-    this.$auth.loginWith('local')
+  mounted() {
+    if (this.$store.state.token.loggedIn) {
+      this.$router.replace({
+        path: '/',
+        query: {},
+      })
+    }
   }
 }
 </script>
-<!--href: 'https://wow-login.gwelican.eu/oauth2/authorization/battlenet',-->
