@@ -48,10 +48,10 @@ const token = namespace('token')
 @Component
 export default class Default extends Vue {
   @token.State
-  private user
+  private user: string
 
   @token.State
-  private loggedIn
+  private loggedIn: boolean
 
   @token.Action('clearTokens')
   private clearTokens: any
