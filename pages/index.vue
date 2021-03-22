@@ -147,6 +147,7 @@ export default class Index extends Vue {
   private series!: Series[]
 
   mounted() {
+    this.$apolloProvider.defaultClient.cache.reset()
     this.loadAvailability(this.$apollo)
   }
 }
