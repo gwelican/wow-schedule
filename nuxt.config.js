@@ -47,52 +47,6 @@ export default {
     // '@nuxtjs/auth-next',
   ],
 
-  // auth: {
-  //   redirect: {
-  //     login: '/login',
-  //     home: '/my-schedule',
-  //     logout: '/',
-  //   },
-  //   plugins: ['~/plugins/auth.ts'],
-  //   strategies: {
-  //     local: {
-  //       scheme: 'refresh',
-  //       user: {
-  //         property: 'principal.claims.battle_tag',
-  //         // autoFetch: true
-  //       },
-  //       token: {
-  //         property: 'accessToken',
-  //         maxAge: 1800,
-  //         // type: 'Bearer'
-  //       },
-  //       refreshToken: {
-  //         property: 'refreshToken',
-  //         data: 'refresh_token',
-  //         maxAge: 60 * 60 * 24 * 30,
-  //       },
-  //       endpoints: {
-  //         login: {
-  //           url: 'https://wow-login.gwelican.eu/login/token',
-  //           method: 'get',
-  //           withCredentials: true,
-  //         },
-  //         refresh: {
-  //           url: 'https://wow-login.gwelican.eu/login/token',
-  //           withCredentials: true,
-  //           method: 'get',
-  //         },
-  //         user: {
-  //           url: 'https://wow-login.gwelican.eu/login/me',
-  //           method: 'get',
-  //           withCredentials: true,
-  //         },
-  //         logout: false,
-  //       },
-  //     },
-  //   },
-  // },
-
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {},
 
