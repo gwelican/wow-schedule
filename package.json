@@ -20,7 +20,7 @@
     "apexcharts": "^3.26.0",
     "cookie-universal-nuxt": "^2.1.4",
     "core-js": "^3.9.1",
-    "firebase": "^8.3.0",
+    "firebase": "^8.3.1",
     "graphql-tag": "^2.11.0",
     "lodash": "^4.17.21",
     "luxon": "^1.26.0",
