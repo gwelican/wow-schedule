@@ -44,6 +44,8 @@ export default {
     ['cookie-universal-nuxt', { alias: 'cookies' }],
     '@nuxtjs/axios',
     '@nuxtjs/apollo',
+    '@nuxtjs/tailwindcss',
+
     // '@nuxtjs/auth-next',
   ],
 
