@@ -10,10 +10,20 @@
               <v-card-text>
                 <v-row>
                   <v-col offset-lg="2" lg="1">
-                    <v-text-field v-model="start" label="start"></v-text-field>
+                    <v-text-field
+                      v-model="start"
+                      label="start"
+                      :rules="[checkStartDate]"
+                      @keyup="updateAddButton"
+                    ></v-text-field>
                   </v-col>
                   <v-col lg="1">
-                    <v-text-field v-model="end" label="end"></v-text-field>
+                    <v-text-field
+                      v-model="end"
+                      label="end"
+                      :rules="[checkEndDate]"
+                      @keyup="updateAddButton"
+                    ></v-text-field>
                   </v-col>
                   <v-col lg="1">
                     <v-select
@@ -47,7 +57,9 @@
                     </v-chip-group>
                   </v-col>
                 </v-row>
-                <v-btn @click="addRange()">Add</v-btn>
+                <v-btn :disabled="isAddButtonDisabled" @click="addRange()"
+                  >Add</v-btn
+                >
               </v-card-text>
             </v-card>
           </v-col>
@@ -89,6 +101,8 @@ const myschedule = namespace('myschedule')
 })
 export default class Schedule extends Vue {
   private forceRenderNumber: number = 0
+  private isAddButtonDisabled = false
+
   start: string = '08:00'
   end: string = '12:00'
 
@@ -143,6 +157,33 @@ export default class Schedule extends Vue {
       min: DateTime.local(2021, 1, 1, 0, 0).toJSDate().getTime(),
       max: DateTime.local(2021, 1, 2, 0, 0).toJSDate().getTime(),
     },
+  }
+
+  updateAddButton() {
+    this.isAddButtonDisabled =
+      this.checkStartDate() !== true || this.checkEndDate() !== true
+  }
+
+  checkStartDate() {
+    const start = DateTime.fromFormat(this.start, 'HH:mm').toFormat('HHmm')
+    if (start === 'Invalid DateTime') {
+      return 'Invalid format, use hh:mm, with leading 0s.'
+    }
+    return true
+  }
+
+  checkEndDate() {
+    const end = DateTime.fromFormat(this.end, 'HH:mm').toFormat('HHmm')
+    const start = DateTime.fromFormat(this.start, 'HH:mm').toFormat('HHmm')
+    console.log(start)
+    console.log(end)
+    if (end === 'Invalid DateTime') {
+      return 'Invalid format, use hh:mm, with leading 0s.'
+    }
+    if (end <= start) {
+      return 'End time must be later than start time'
+    }
+    return true
   }
 
   weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
