@@ -7,7 +7,7 @@ const auth: Plugin = async ({ store, $cookies }) => {
 
   if (typeof accessToken !== 'undefined') {
     const data = jwtDecode<JwtPayload>(accessToken)
-    if (Date.now() <= data.exp!) {
+    if (Date.now() >= data.exp!) {
       console.log('Expired accessToken')
       console.log(data)
       $cookies.remove('AccessToken')
@@ -18,7 +18,7 @@ const auth: Plugin = async ({ store, $cookies }) => {
 
   if (typeof refreshToken !== 'undefined') {
     const data = jwtDecode<JwtPayload>(refreshToken)
-    if (Date.now() <= data.exp!) {
+    if (Date.now() >= data.exp!) {
       console.log('Expired refreshToken')
       console.log(data)
       $cookies.remove('RefreshToken')
