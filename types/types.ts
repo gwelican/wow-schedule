@@ -308,7 +308,7 @@ export type Query = {
 export type UserData = {
   __typename?: 'UserData';
   userId: Scalars['String'];
-  timezone: Scalars['String'];
+  timezone?: Maybe<Scalars['String']>;
   availability: Array<Availability>;
   username: Scalars['String'];
 };
