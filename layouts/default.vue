@@ -67,6 +67,11 @@ export default class Default extends Vue {
   private items = [
     {
       icon: 'mdi-apps',
+      title: 'my Schedule2',
+      to: '/my-schedule2',
+    },
+    {
+      icon: 'mdi-apps',
       title: 'my Schedule',
       to: '/my-schedule',
     },
