@@ -34,31 +34,7 @@
           </div>
         </div>
         <div
-          v-for="h in [
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16,
-            17,
-            18,
-            19,
-            20,
-            21,
-            22,
-            23,
-          ]"
+          v-for="h in hours"
           :key="h"
           class="tw-grid tw-grid-flow-col tw-grid-cols-7 tw-w-auto tw-m-auto"
           @mouseup.stop="mouseUp"
@@ -70,6 +46,7 @@
               v-for="m in [0, 15, 30, 45]"
               :key="`${day}_${h * 100 + m}`"
               :ref="`${day}_${h * 100 + m}`"
+              :data-time="`${day}_${h * 100 + m}`"
               :class="getTimeslotClasses(day, h * 100 + m)"
               @mouseover="mouseOver(day, h * 100 + m)"
               @mousedown="mouseDown(day, h * 100 + m)"
@@ -116,6 +93,14 @@ export default class Schedule extends Vue {
   private mouseButtonState = MouseButtonState.UP
   private operation: OperationType = OperationType.ADD
 
+  get hours() {
+    const hours = []
+    for (let i = 0; i < 24; i++) {
+      hours.push(i)
+    }
+    return hours
+  }
+
   private mouseUp() {
     this.mouseButtonState = MouseButtonState.UP
     this.forceRenderNumber++
@@ -131,6 +116,7 @@ export default class Schedule extends Vue {
         const days = groupByDay[day] as string[]
         const newIntervals: Interval[] = days.map((dayAndInterval: string) => {
           const slot = parseInt(dayAndInterval.split('_')[1])
+          const windowEnd = slot === 2345 ? 14 : 15 // only add 14 minutes to 2345, so it wont be 00:00
           return Interval.fromDateTimes(
             DateTime.fromObject({
               hour: Math.floor(slot / 100),
@@ -139,7 +125,7 @@ export default class Schedule extends Vue {
             DateTime.fromObject({
               hour: Math.floor(slot / 100),
               minute: slot % 100,
-            }).plus(Duration.fromObject({ minutes: 15 }))
+            }).plus(Duration.fromObject({ minutes: windowEnd }))
           )
         })
         const merged = Interval.merge(newIntervals)
@@ -201,16 +187,6 @@ export default class Schedule extends Vue {
       classes.push('selected')
     }
     return classes
-  }
-
-  mounted() {
-    this.availability.set('Mon', [
-      Interval.fromDateTimes(
-        DateTime.now(),
-        DateTime.now().plus(Duration.fromObject({ minute: 15 }))
-      ),
-    ])
-    this.forceRenderNumber++
   }
 }
 </script>
