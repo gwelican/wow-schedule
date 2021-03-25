@@ -14694,7 +14694,7 @@ tailwind-config-viewer@^1.5.0:
     portfinder "^1.0.26"
     replace-in-file "^6.1.0"
 
-tailwindcss@^2.0.3:
+tailwindcss@*, tailwindcss@^2.0.3:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-2.0.4.tgz#cf13e62738c3a27065664e449d93b66ee2945506"
   integrity sha512-WhgR0oiBxGOZ9jY0yVfaJCHnckR7U74Fs/BMsYxGdwGJQ5Hd/HlaKD26bEJFZOvYScJo0QcUj2ImldzedsG7Bw==
@@ -15785,6 +15785,11 @@ vuetify-loader@^1.6.0:
     decache "^4.6.0"
     file-loader "^6.2.0"
     loader-utils "^2.0.0"
+
+vuetify@*:
+  version "2.4.8"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.4.8.tgz#c6e883a9b2560f9906bd8b9f9eb58b001200aeef"
+  integrity sha512-rJYyzSO4Qsm/Q79W4FAUedgIDzUvx2uXzXXQ7OB2z9kAAkVOpTdMFY0CnpBcvlYbXOYy/mJ81/yUCV1ZAvJ3FQ==
 
 vuetify@^2.4.2:
   version "2.4.3"

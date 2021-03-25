@@ -1,247 +1,232 @@
 <template>
   <v-container>
-    <v-card>
-      <v-card-title>Schedule</v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="1">
-            <v-row
-              v-for="i in [
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9,
-                10,
-                11,
-                12,
-                13,
-                14,
-                15,
-                16,
-                17,
-                18,
-                19,
-                20,
-                21,
-                22,
-                23,
-              ]"
-              :key="i + 'label'"
-              dense
-            >
-              <v-col class="pa-0">
-                <div style="text-align: right; height: 10px">{{ i }}:00</div>
-                <div style="height: 30px"></div>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col cols="1">
-            <v-row
-              v-for="i in [
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9,
-                10,
-                11,
-                12,
-                13,
-                14,
-                15,
-                16,
-                17,
-                18,
-                19,
-                20,
-                21,
-                22,
-                23,
-              ]"
-              :key="i + 'time'"
-              dense
-            >
-              <v-col class="pa-0">
-                <div class="timeblock start"></div>
-                <div class="timeblock quarter"></div>
-                <div class="timeblock"></div>
-                <div class="timeblock quarter end">{{ i }}</div>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
+    <div class="tw-rounded tw-bg-gray-500 tw-w-1/2 tw-m-auto">
+      <div class="tw-grid tw-grid-cols-7 tw-grid-flow-col">
+        <div v-for="day of availability.keys()" :key="day">
+          <div
+            v-for="interval of availability.get(day)"
+            :key="interval.start.toISO()"
+          >
+            {{ day }} => {{ interval | humanDate }}
+          </div>
+        </div>
+      </div>
+      <div :key="forceRenderNumber" class="tw-bg-white tw-p-6">
+        <div
+          v-for="h in [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+          ]"
+          :key="h"
+          class="tw-grid tw-grid-flow-col tw-grid-cols-7 tw-w-auto tw-m-auto"
+          @mouseup.stop="mouseUp"
+        >
+          <div class="timeslot-time tw-w-full">{{ h }}:00</div>
+
+          <template v-for="day of days">
+            <div
+              v-for="m in [0, 15, 30, 45]"
+              :key="`${day}_${h * 100 + m}`"
+              :ref="`${day}_${h * 100 + m}`"
+              :class="getTimeslotClasses(day, h * 100 + m)"
+              @mouseover="mouseOver(day, h * 100 + m)"
+              @mousedown="mouseDown(day, h * 100 + m)"
+              @mouseup.stop="mouseUp"
+            ></div>
+          </template>
+        </div>
+      </div>
+    </div>
   </v-container>
 </template>
 
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
-import { DateTime, Interval } from 'luxon'
-import { ApexOptions } from 'apexcharts'
+import { Component, Vue } from 'nuxt-property-decorator'
+import { DateTime, Duration, Interval } from 'luxon'
 import _ from 'lodash'
-import { Series } from '~/types/apexHelper'
 
-const myschedule = namespace('myschedule')
+enum OperationType {
+  DELETE,
+  ADD,
+}
+
+enum MouseButtonState {
+  DOWN,
+  UP,
+}
 
 @Component({
   filters: {
-    humanDate: (value: string) => {
-      return DateTime.fromISO(value).toFormat('HH:mm')
+    humanDate(interval: Interval) {
+      return (
+        interval.start.toFormat('HH:mm') + '-' + interval.end.toFormat('HH:mm')
+      )
     },
   },
-  middleware: 'auth.middleware',
 })
 export default class Schedule extends Vue {
-  private forceRenderNumber: number = 0
-  private isAddButtonDisabled = false
+  private forceRenderNumber: number = 100
+  private timeslot = new Set()
 
-  start: string = '08:00'
-  end: string = '12:00'
+  private days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  private availability: Map<string, Interval[]> = new Map<string, Interval[]>()
 
-  day: string = 'Mon'
-  tz: string = 'PST'
-  type: string = 'free'
+  private mouseButtonState = MouseButtonState.UP
+  private operation: OperationType
 
-  avail: Map<string, Interval[]> = new Map<string, Interval[]>()
+  private mouseUp() {
+    this.mouseButtonState = MouseButtonState.UP
+    this.forceRenderNumber++
+    console.log('redraw')
 
-  @myschedule.State
-  private series!: Series[]
-
-  @myschedule.Action
-  private loadSchedule: any
-
-  @myschedule.Action
-  private addAvailability: any
-
-  options: ApexOptions = {
-    chart: {
-      type: 'rangeBar',
-      zoom: { enabled: false },
-    },
-    plotOptions: {
-      bar: {
-        horizontal: true,
-        barHeight: '80%',
-      },
-    },
-    dataLabels: {
-      formatter(_): string {
-        return 'Available'
-      },
-    },
-    tooltip: {
-      enabled: false,
-    },
-    noData: {
-      text: 'No data',
-    },
-    annotations: {
-      xaxis: [],
-    },
-    xaxis: {
-      tickAmount: 24,
-      type: 'datetime',
-      labels: {
-        formatter: (value, _) => {
-          return DateTime.fromJSDate(new Date(value)).toFormat('HH:mm')
-        },
-      },
-      min: DateTime.local(2021, 1, 1, 0, 0).toJSDate().getTime(),
-      max: DateTime.local(2021, 1, 2, 0, 0).toJSDate().getTime(),
-    },
-  }
-
-  updateAddButton() {
-    this.isAddButtonDisabled =
-      this.checkStartDate() !== true || this.checkEndDate() !== true
-  }
-
-  checkStartDate() {
-    const start = DateTime.fromFormat(this.start, 'HH:mm').toFormat('HHmm')
-    if (start === 'Invalid DateTime') {
-      return 'Invalid format, use hh:mm, with leading 0s.'
+    if (this.timeslot.size > 1) {
+      const groupByDay = _.groupBy(
+        Array.from(this.timeslot),
+        (e) => e.split('_')[0]
+      )
+      for (const day of Object.keys(groupByDay)) {
+        console.log(day)
+        const newIntervals = groupByDay[day].map((day) => {
+          const [_, slot] = day.split('_')
+          return Interval.fromDateTimes(
+            DateTime.fromObject({
+              hour: parseInt(slot / 100),
+              minute: slot % 100,
+            }),
+            DateTime.fromObject({
+              hour: parseInt(slot / 100),
+              minute: slot % 100,
+            }).plus(Duration.fromObject({ minutes: 15 }))
+          )
+        })
+        const merged = Interval.merge(newIntervals)
+        this.availability.set(day, merged)
+      }
     }
-    return true
   }
 
-  checkEndDate() {
-    const end = DateTime.fromFormat(this.end, 'HH:mm').toFormat('HHmm')
-    const start = DateTime.fromFormat(this.start, 'HH:mm').toFormat('HHmm')
-    console.log(start)
-    console.log(end)
-    if (end === 'Invalid DateTime') {
-      return 'Invalid format, use hh:mm, with leading 0s.'
+  private mouseOver(day: string, slot: number) {
+    if (this.mouseButtonState === MouseButtonState.DOWN) {
+      if (this.$refs[Schedule.createKey(day, slot)]) {
+        if (this.operation === OperationType.ADD) {
+          this.selectTimeslot(day, slot)
+        } else if (this.operation === OperationType.DELETE) {
+          this.deSelectTimeslot(day, slot)
+        }
+      }
     }
-    if (end <= start) {
-      return 'End time must be later than start time'
+  }
+
+  private selectTimeslot(day: string, slot: number) {
+    const key = Schedule.createKey(day, slot)
+    if (this.$refs[key] && this.$refs[key].length > 0) {
+      this.$refs[key][0].classList.add('selected')
     }
-    return true
+    this.timeslot.add(key)
   }
 
-  weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-  mounted() {
-    this.loadSchedule(this.$apollo)
+  private deSelectTimeslot(day: string, slot: number) {
+    const key = Schedule.createKey(day, slot)
+    if (this.$refs[key] && this.$refs[key].length > 0) {
+      this.$refs[key][0].classList.remove('selected')
+    }
+    this.timeslot.delete(key)
   }
 
-  deleteAvailability(day: string, interval: Interval) {
-    this.avail.set(
-      day,
-      _.remove(this.avail.get(day) as Interval[], (v: Interval) => {
-        interval.equals(v)
-      })
-    )
+  private mouseDown(day: string, num: number) {
+    this.operation = this.timeslot.has(Schedule.createKey(day, num))
+      ? OperationType.DELETE
+      : OperationType.ADD
+    console.log('mouse down' + num)
+    this.mouseButtonState = MouseButtonState.DOWN
+    this.mouseOver(day, num)
   }
 
-  addRange() {
-    this.addAvailability({
-      apollo: this.$apollo,
-      start: parseInt(
-        DateTime.fromFormat(this.start, 'HH:mm').toFormat('HHmm')
-      ),
-      end: parseInt(DateTime.fromFormat(this.end, 'HH:mm').toFormat('HHmm')),
-      timezone: this.tz,
-      day: this.day,
-    })
-    this.loadSchedule(this.$apollo)
+  private static createKey(day: string, num: number) {
+    return `${day}_${num}`
+  }
 
-    //
+  private getTimeslotClasses(day: string, num: number) {
+    const classes = ['timeslot']
+    if (this.timeslot.has(Schedule.createKey(day, num))) {
+      classes.push('selected')
+    }
+    if (num % 100 === 30) {
+      classes.push('tw-border-t-2 tw-border-black border-top-dotted')
+    }
+    if (num % 100 === 0) {
+      classes.push('tw-border-t-2 tw-border-solid tw-border-black')
+    }
+    return classes
   }
 }
 </script>
 
 <style lang="scss">
-.timeblock {
-  width: 100%;
-  border-bottom: 1px solid black;
-  border-left: 1px solid black;
-  border-right: 1px solid black;
-
-  background-color: pink;
-  height: 10px;
-}
-.quarter {
-  margin-top: -1px;
-}
-.end {
-  @apply border-b-2 border-black;
-  //border-bottom: 2px solid black;
-}
-//.timeblock-start {
-//  border-top: 2px solid black;
+//.timeblock {
+//  width: 100%;
+//  border-bottom: 1px solid black;
+//  border-left: 1px solid black;
+//  border-right: 1px solid black;
+//
+//  background-color: pink;
+//  height: 10px;
 //}
-.start {
-  @apply border-t-2 border-black;
+//.quarter {
+//  margin-top: -1px;
+//}
+//.end {
+//  @apply tw-border-b-2 tw-border-black;
+//  //border-bottom: 2px solid black;
+//}
+////.timeblock-start {
+////  border-top: 2px solid black;
+////}
+//.start {
+//  @apply tw-border-t-2 tw-border-black;
+//}
+.timeslot {
+  @apply tw-bg-pink-200 tw-w-8 tw-h-1.5 tw-border-l-2 tw-border-r-2 tw-border-solid tw-border-black tw-gap-0;
+}
+
+//.timeslot:nth-child(3n + 0) {
+//  @apply tw-border-t-2 tw-border-solid tw-border-black;
+//}
+//
+//.timeslot:nth-child(5n + 0) {
+//  border-top-style: dotted;
+//  @apply tw-border-t-2 tw-border-black;
+//}
+
+.border-top-dotted {
+  border-top-style: dotted;
+}
+.timeslot-time {
+  @apply tw-row-span-4 tw-row-start-2 tw-text-right tw--mt-3 tw-pr-1 tw-text-black;
+}
+
+.selected {
+  @apply tw-bg-green-400;
 }
 </style>

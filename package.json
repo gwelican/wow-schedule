@@ -31,6 +31,8 @@
     "vue-apollo": "^3.0.7"
   },
   "devDependencies": {
+    "vuetify": "*",
+    "tailwindcss": "*",
     "@graphql-codegen/cli": "^1.21.3",
     "@graphql-codegen/typescript": "^1.21.1",
     "@graphql-codegen/typescript-graphql-files-modules": "^1.18.1",
