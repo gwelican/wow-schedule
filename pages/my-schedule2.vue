@@ -153,10 +153,6 @@ export default class Schedule extends Vue {
     }
   }
 
-  private touchStart(day: string, slot: number) {
-    console.log('hi')
-  }
-
   private selectTimeslot(day: string, slot: number) {
     const key = Schedule.createKey(day, slot)
     if (this.$refs[key]) {
