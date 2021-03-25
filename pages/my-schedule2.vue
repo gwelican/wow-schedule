@@ -1,17 +1,38 @@
 <template>
   <v-container>
-    <div class="tw-rounded tw-bg-gray-500 tw-w-1/2 tw-m-auto">
-      <div class="tw-grid tw-grid-cols-7 tw-grid-flow-col">
-        <div v-for="day of availability.keys()" :key="day">
-          <div
+    <div class="tw-rounded tw-bg-gray-700 tw-w-1/2 tw-mx-auto tw-flex">
+      <div class="tw-w-1/2 tw-m-1 tw-flex-col tw-flex">
+        <div
+          v-for="day of availability.keys()"
+          :key="day"
+          class="tw-rounded tw-bg-gray-500 tw-w-full tw-mt-2 tw-p-2 hover:tw-bg-blue-800"
+        >
+          {{ day }}:
+          <span
             v-for="interval of availability.get(day)"
             :key="interval.start.toISO()"
+            class="tw-h-auto"
           >
-            {{ day }} => {{ interval | humanDate }}
+            [{{ interval | humanDate }}]
+          </span>
+        </div>
+        <v-btn class="tw-mt-auto">Save</v-btn>
+      </div>
+      <div
+        :key="forceRenderNumber"
+        class="tw-bg-white tw-p-6 tw-w-1/2 tw-rounded tw-px-2 tw-py-1 tw-m-1"
+      >
+        <div
+          class="tw-grid tw-grid-flow-col tw-grid-cols-7 tw-w-auto tw-m-auto tw-text-black tw-col-start-2"
+        >
+          <div
+            v-for="(day, index) in days"
+            :key="index"
+            :class="`tw-col-start-${index + 2}`"
+          >
+            {{ day }}
           </div>
         </div>
-      </div>
-      <div :key="forceRenderNumber" class="tw-bg-white tw-p-6">
         <div
           v-for="h in [
             1,
@@ -93,7 +114,7 @@ export default class Schedule extends Vue {
   private availability: Map<string, Interval[]> = new Map<string, Interval[]>()
 
   private mouseButtonState = MouseButtonState.UP
-  private operation: OperationType
+  private operation: OperationType = OperationType.ADD
 
   private mouseUp() {
     this.mouseButtonState = MouseButtonState.UP
@@ -103,19 +124,20 @@ export default class Schedule extends Vue {
     if (this.timeslot.size > 1) {
       const groupByDay = _.groupBy(
         Array.from(this.timeslot),
-        (e) => e.split('_')[0]
+        (e: string) => e.split('_')[0]
       )
       for (const day of Object.keys(groupByDay)) {
         console.log(day)
-        const newIntervals = groupByDay[day].map((day) => {
-          const [_, slot] = day.split('_')
+        const days = groupByDay[day] as string[]
+        const newIntervals: Interval[] = days.map((dayAndInterval: string) => {
+          const slot = parseInt(dayAndInterval.split('_')[1])
           return Interval.fromDateTimes(
             DateTime.fromObject({
-              hour: parseInt(slot / 100),
+              hour: Math.floor(slot / 100),
               minute: slot % 100,
             }),
             DateTime.fromObject({
-              hour: parseInt(slot / 100),
+              hour: Math.floor(slot / 100),
               minute: slot % 100,
             }).plus(Duration.fromObject({ minutes: 15 }))
           )
@@ -140,16 +162,22 @@ export default class Schedule extends Vue {
 
   private selectTimeslot(day: string, slot: number) {
     const key = Schedule.createKey(day, slot)
-    if (this.$refs[key] && this.$refs[key].length > 0) {
-      this.$refs[key][0].classList.add('selected')
+    if (this.$refs[key]) {
+      const ref = this.$refs[key] as Element[]
+      if (ref.length > 0) {
+        ref[0].classList.add('selected')
+      }
     }
     this.timeslot.add(key)
   }
 
   private deSelectTimeslot(day: string, slot: number) {
     const key = Schedule.createKey(day, slot)
-    if (this.$refs[key] && this.$refs[key].length > 0) {
-      this.$refs[key][0].classList.remove('selected')
+    if (this.$refs[key]) {
+      const ref = this.$refs[key] as Element[]
+      if (ref.length > 0) {
+        ref[0].classList.remove('selected')
+      }
     }
     this.timeslot.delete(key)
   }
@@ -172,61 +200,40 @@ export default class Schedule extends Vue {
     if (this.timeslot.has(Schedule.createKey(day, num))) {
       classes.push('selected')
     }
-    if (num % 100 === 30) {
-      classes.push('tw-border-t-2 tw-border-black border-top-dotted')
-    }
-    if (num % 100 === 0) {
-      classes.push('tw-border-t-2 tw-border-solid tw-border-black')
-    }
     return classes
+  }
+
+  mounted() {
+    this.availability.set('Mon', [
+      Interval.fromDateTimes(
+        DateTime.now(),
+        DateTime.now().plus(Duration.fromObject({ minute: 15 }))
+      ),
+    ])
+    this.forceRenderNumber++
   }
 }
 </script>
 
 <style lang="scss">
-//.timeblock {
-//  width: 100%;
-//  border-bottom: 1px solid black;
-//  border-left: 1px solid black;
-//  border-right: 1px solid black;
-//
-//  background-color: pink;
-//  height: 10px;
-//}
-//.quarter {
-//  margin-top: -1px;
-//}
-//.end {
-//  @apply tw-border-b-2 tw-border-black;
-//  //border-bottom: 2px solid black;
-//}
-////.timeblock-start {
-////  border-top: 2px solid black;
-////}
-//.start {
-//  @apply tw-border-t-2 tw-border-black;
-//}
 .timeslot {
-  @apply tw-bg-pink-200 tw-w-8 tw-h-1.5 tw-border-l-2 tw-border-r-2 tw-border-solid tw-border-black tw-gap-0;
+  @apply tw-bg-blue-200 tw-w-8 tw-h-1.5 tw-border-l-2 tw-border-r-2 tw-border-solid tw-border-black tw-gap-0;
 }
 
-//.timeslot:nth-child(3n + 0) {
-//  @apply tw-border-t-2 tw-border-solid tw-border-black;
-//}
-//
-//.timeslot:nth-child(5n + 0) {
-//  border-top-style: dotted;
-//  @apply tw-border-t-2 tw-border-black;
-//}
+.timeslot:nth-child(2n + 0) {
+  @apply tw-border-t-2 tw-border-solid tw-border-black;
+}
 
-.border-top-dotted {
+.timeslot:nth-child(4n + 0) {
   border-top-style: dotted;
+  @apply tw-border-t-2 tw-border-black;
 }
+
 .timeslot-time {
-  @apply tw-row-span-4 tw-row-start-2 tw-text-right tw--mt-3 tw-pr-1 tw-text-black;
+  @apply tw-row-span-3 tw-row-start-2 tw-text-right tw--mt-3 tw-pr-1 tw-text-black;
 }
 
 .selected {
-  @apply tw-bg-green-400;
+  @apply tw-bg-green-700;
 }
 </style>
