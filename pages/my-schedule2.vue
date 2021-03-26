@@ -67,7 +67,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import { DateTime, Duration, Interval } from 'luxon'
 import _ from 'lodash'
 
@@ -81,9 +81,12 @@ enum MouseButtonState {
   UP,
 }
 
+const myschedule = namespace('myschedule')
+
 @Component({
   filters: {
     humanDate(interval: Interval) {
+      // return interval
       return (
         interval.start.toFormat('HH:mm') + '-' + interval.end.toFormat('HH:mm')
       )
@@ -92,7 +95,9 @@ enum MouseButtonState {
 })
 export default class Schedule extends Vue {
   private forceRenderNumber: number = 100
-  private timeslot = new Set()
+
+  @myschedule.State
+  private timeslot: any
 
   private days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
   private availability: Map<string, Interval[]> = new Map<string, Interval[]>()
@@ -114,6 +119,7 @@ export default class Schedule extends Vue {
     console.log('redraw')
 
     if (this.timeslot.size > 1) {
+      console.log(this.timeslot)
       const groupByDay = _.groupBy(
         Array.from(this.timeslot),
         (e: string) => e.split('_')[0]
@@ -198,6 +204,16 @@ export default class Schedule extends Vue {
       classes.push('selected')
     }
     return classes
+  }
+
+  @myschedule.Action
+  private loadSchedule2: any
+
+  mounted() {
+    this.loadSchedule2(this.$apollo).then(() => {
+      this.forceRenderNumber++
+      console.log(this.timeslot)
+    })
   }
 }
 </script>
