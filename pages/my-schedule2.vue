@@ -1,7 +1,9 @@
 <template>
   <v-container>
-    <div class="tw-rounded tw-bg-gray-700 tw-w-1/2 tw-mx-auto tw-flex">
-      <div class="tw-w-1/2 tw-m-1 tw-flex-col tw-flex">
+    <div
+      class="tw-rounded tw-bg-gray-700 lg:tw-w-1/2 sm:tw-w-1/2 md:tw-w-1 tw-mx-auto tw-flex"
+    >
+      <div class="lg:tw-w-1/2 sm:tw-w-1/3 tw-m-1 tw-flex-col tw-flex">
         <div
           v-for="day of availability.keys()"
           :key="day"
@@ -20,7 +22,7 @@
       </div>
       <div
         :key="forceRenderNumber"
-        class="tw-bg-white tw-p-6 tw-w-1/2 tw-rounded tw-px-2 tw-py-1 tw-m-1"
+        class="tw-bg-white tw-p-6 lg:tw-w-1/2 sm:tw-w-2/3 tw-rounded tw-px-2 tw-py-1 tw-m-1"
       >
         <div
           class="tw-grid tw-grid-flow-col tw-grid-cols-7 tw-w-auto tw-m-auto tw-text-black tw-col-start-2"
@@ -30,7 +32,9 @@
             :key="index"
             :class="`tw-col-start-${index + 2}`"
           >
-            {{ day }}
+            <span class="xs:tw-text-xs">
+              {{ day }}
+            </span>
           </div>
         </div>
         <div
@@ -39,7 +43,7 @@
           class="tw-grid tw-grid-flow-col tw-grid-cols-7 tw-w-auto tw-m-auto"
           @mouseup.stop="mouseUp"
         >
-          <div class="timeslot-time tw-w-full">{{ h }}:00</div>
+          <div class="timeslot-time tw-w-full xs:tw-text-2xs">{{ h }}:00</div>
 
           <template v-for="day of days">
             <div
@@ -50,6 +54,9 @@
               :class="getTimeslotClasses(day, h * 100 + m)"
               @mouseover="mouseOver(day, h * 100 + m)"
               @mousedown="mouseDown(day, h * 100 + m)"
+              @touchstart="mouseDown(day, h * 100 + m)"
+              @touchend="mouseUp"
+              @touchmove="mouseOver(day, h * 100 + m)"
               @mouseup.stop="mouseUp"
             ></div>
           </template>
