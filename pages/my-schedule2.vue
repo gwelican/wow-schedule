@@ -1,13 +1,13 @@
 <template>
   <v-container>
     <div
-      class="tw-rounded tw-bg-gray-700 lg:tw-w-1/2 sm:tw-w-1/2 md:tw-w-1 tw-mx-auto tw-flex"
+      class="tw-rounded tw-bg-gray-700 lg:tw-w-1/2 xs:tw-w-1/2 md:tw-w-1 tw-mx-auto tw-flex"
     >
-      <div class="lg:tw-w-1/2 sm:tw-w-1/3 tw-m-1 tw-flex-col tw-flex">
+      <div class="lg:tw-w-1/2 xs:tw-w-1/3 tw-m-1 tw-flex-col tw-flex">
         <div
           v-for="day of availability.keys()"
           :key="day"
-          class="tw-rounded tw-bg-gray-500 tw-w-full tw-mt-2 tw-p-2 hover:tw-bg-blue-800"
+          class="tw-rounded tw-bg-gray-500 tw-mt-2 tw-p-2 hover:tw-bg-blue-800"
         >
           {{ day }}:
           <span
@@ -22,7 +22,7 @@
       </div>
       <div
         :key="forceRenderNumber"
-        class="tw-bg-white tw-p-6 lg:tw-w-1/2 sm:tw-w-2/3 tw-rounded tw-px-2 tw-py-1 tw-m-1"
+        class="tw-bg-white tw-p-6 lg:tw-w-1/2 xs:tw-w-2/3 tw-rounded tw-px-2 tw-py-1 tw-m-1"
       >
         <div
           class="tw-grid tw-grid-flow-col tw-grid-cols-7 tw-w-auto tw-m-auto tw-text-black tw-col-start-2"
@@ -54,10 +54,10 @@
               :class="getTimeslotClasses(day, h * 100 + m)"
               @mouseover="mouseOver(day, h * 100 + m)"
               @mousedown="mouseDown(day, h * 100 + m)"
-              @touchstart="mouseDown(day, h * 100 + m)"
-              @touchend="mouseUp"
-              @touchmove="mouseOver(day, h * 100 + m)"
               @mouseup.stop="mouseUp"
+              @touchstart.stop="mouseDown(day, h * 100 + m)"
+              @touchend.stop="mouseUp"
+              @touchmove.stop="mouseOver(day, h * 100 + m)"
             ></div>
           </template>
         </div>
@@ -142,8 +142,10 @@ export default class Schedule extends Vue {
   }
 
   private mouseOver(day: string, slot: number) {
+    const key = Schedule.createKey(day, slot)
+    console.log('mouseover: ' + key)
     if (this.mouseButtonState === MouseButtonState.DOWN) {
-      if (this.$refs[Schedule.createKey(day, slot)]) {
+      if (this.$refs[key]) {
         if (this.operation === OperationType.ADD) {
           this.selectTimeslot(day, slot)
         } else if (this.operation === OperationType.DELETE) {
@@ -155,6 +157,7 @@ export default class Schedule extends Vue {
 
   private selectTimeslot(day: string, slot: number) {
     const key = Schedule.createKey(day, slot)
+    console.log('selecting timeslot: ' + key)
     if (this.$refs[key]) {
       const ref = this.$refs[key] as Element[]
       if (ref.length > 0) {
@@ -166,6 +169,7 @@ export default class Schedule extends Vue {
 
   private deSelectTimeslot(day: string, slot: number) {
     const key = Schedule.createKey(day, slot)
+    console.log('deselecting timeslot: ' + key)
     if (this.$refs[key]) {
       const ref = this.$refs[key] as Element[]
       if (ref.length > 0) {
