@@ -51,8 +51,7 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/apollo',
     '@nuxtjs/tailwindcss',
-
-    // '@nuxtjs/auth-next',
+    '@nuxtjs/toast',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -79,15 +78,10 @@ export default {
 
   apollo: {
     clientConfigs: {
-      default: {
-        httpEndpoint:
-          process.env.NODE_ENV === 'production'
-            ? 'https://wow-data.gwelican.eu/graphql'
-            : 'http://localhost:8081/graphql',
-        tokenName: 'AccessToken',
-      },
+      default: '~/plugins/apollo-config.js',
     },
   },
+
   router: {
     base: '/wow-schedule/',
   },
@@ -108,6 +102,19 @@ export default {
     DATA_URL: process.env.NODE_ENV
       ? 'https://wow-data.gwelican.eu'
       : 'http://localhost:8081',
+  },
+  toast: {
+    position: 'top-right',
+    register: [
+      // Register custom toasts
+      {
+        name: 'my-error',
+        message: 'Oops...Something went wrong',
+        options: {
+          type: 'error',
+        },
+      },
+    ],
   },
   privateRuntimeConfig: {},
   purgeCSS: {},

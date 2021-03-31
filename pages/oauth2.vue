@@ -4,6 +4,7 @@
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '~/plugins/auth'
 
 const qs = require('qs')
 const token = namespace('token')
@@ -37,8 +38,8 @@ export default class Oauth2 extends Vue {
     this.saveAccessToken(accessToken)
     this.saveRefreshToken(refreshToken)
 
-    this.$cookies.set('AccessToken', accessToken)
-    this.$cookies.set('RefreshToken', refreshToken)
+    this.$cookies.set(ACCESS_TOKEN_NAME, accessToken)
+    this.$cookies.set(REFRESH_TOKEN_NAME, refreshToken)
 
     await this.$router.replace({
       path: '/',

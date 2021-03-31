@@ -43,6 +43,7 @@
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '~/plugins/auth'
 
 const token = namespace('token')
 @Component
@@ -57,19 +58,14 @@ export default class Default extends Vue {
   private clearTokens: any
 
   async logout() {
-    this.$cookies.remove('AccessToken')
-    this.$cookies.remove('RefreshToken')
+    this.$cookies.remove(ACCESS_TOKEN_NAME)
+    this.$cookies.remove(REFRESH_TOKEN_NAME)
 
     this.clearTokens()
     await this.$router.push('/login')
   }
 
   private items = [
-    {
-      icon: 'mdi-apps',
-      title: 'my Schedule2',
-      to: '/my-schedule2',
-    },
     {
       icon: 'mdi-apps',
       title: 'my Schedule',

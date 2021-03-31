@@ -26,9 +26,10 @@
     "types": [
       "@nuxt/types",
       "@nuxtjs/axios",
+      "@nuxtjs/auth-next",
+      "@nuxtjs/toast",
       "@types/node",
-      "vue-apollo/types",
-      "@nuxtjs/auth-next"
+      "vue-apollo/types"
     ]
   },
   "exclude": [

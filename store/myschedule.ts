@@ -2,9 +2,7 @@ import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import DollarApollo from 'vue-apollo'
 import gql from 'graphql-tag'
 import { DateTime, Duration, Interval } from 'luxon'
-import { Availability, UserData } from '~/types/types'
-import { getIntervalForTime } from '~/store/availability'
-import { Series, SeriesData } from '~/types/apexHelper'
+import { Availability } from '~/types/types'
 
 interface WeekDays {
   [key: string]: number
@@ -15,31 +13,7 @@ interface WeekDays {
   namespaced: true,
 })
 export default class MySchedule extends VuexModule {
-  private series: Series[] = []
-  private availability: Map<string, Interval[]> = new Map<string, Interval[]>()
   private timeslot = new Set()
-
-  @Action
-  async loadSchedule(apollo: DollarApollo) {
-    const response = await apollo.query({
-      query: gql`
-        query UserData {
-          myschedule {
-            availability {
-              day
-              intervals {
-                end
-                start
-                timezone
-              }
-            }
-          }
-        }
-      `,
-    })
-
-    this.context.commit('generateSeries', response.data.myschedule)
-  }
 
   @Action
   async saveSchedule({
@@ -51,9 +25,7 @@ export default class MySchedule extends VuexModule {
     schedule: Interval[]
     timezone: string
   }) {
-    console.log(schedule)
-
-    const response = await apollo.mutate({
+    return await apollo.mutate({
       mutation: gql`
         mutation($schedule: [IntervalInput], $timezone: String) {
           saveSchedule(schedule: $schedule, timezone: $timezone) {
@@ -74,11 +46,10 @@ export default class MySchedule extends VuexModule {
         timezone,
       },
     })
-    console.log(response)
   }
 
   @Action
-  async loadSchedule2(apollo: DollarApollo) {
+  async loadSchedule(apollo: DollarApollo) {
     const response = await apollo.query({
       query: gql`
         query UserData {
@@ -126,77 +97,6 @@ export default class MySchedule extends VuexModule {
   @Mutation
   setTimeslot(timeslot: Set<string>) {
     this.timeslot = timeslot
-    console.log('mutate')
-  }
-
-  @Action
-  async addAvailability({
-    apollo,
-    start,
-    end,
-    timezone,
-    day,
-  }: {
-    apollo: DollarApollo
-    start: number
-    end: number
-    timezone: string
-    day: string
-  }) {
-    const response = await apollo.mutate({
-      mutation: gql`
-        mutation($start: Int!, $end: Int!, $timezone: String!, $day: String!) {
-          addAvailabilityToUser(
-            availability: {
-              timezone: $timezone
-              day: $day
-              start: $start
-              end: $end
-            }
-          ) {
-            username
-            availability {
-              day
-              intervals {
-                start
-                end
-                timezone
-              }
-            }
-          }
-        }
-      `,
-      variables: {
-        day,
-        end,
-        start,
-        timezone,
-      },
-    })
-
-    this.context.commit('generateSeries', response.data.addAvailabilityToUser)
-  }
-
-  @Mutation
-  generateSeries(data: UserData) {
-    const series: Series[] = [{ data: [] }]
-
-    for (const availability of data.availability) {
-      for (const data of availability.intervals) {
-        const interval = getIntervalForTime(data.start, data.end, data.timezone)
-        series[0].data.push({
-          x: availability.day,
-          y: [
-            interval.start.set({ day: 1, month: 1 }),
-            interval.end.set({ day: 1, month: 1 }),
-          ],
-        })
-      }
-    }
-    series[0].data.sort((a: SeriesData, b: SeriesData) => {
-      return this.weekdays[a.x] - this.weekdays[b.x]
-    })
-    this.series = series
   }
 
   weekdays: WeekDays = {
