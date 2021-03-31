@@ -310,4 +310,7 @@ export default class Schedule extends Vue {
 .selected {
   @apply tw-bg-green-700;
 }
+.bullshit {
+  @apply tw-col-start-3 tw-col-start-4  tw-col-start-5  tw-col-start-6  tw-col-start-7  tw-col-start-8  tw-col-start-9  tw-col-start-10 tw-col-start-11;
+}
 </style>
