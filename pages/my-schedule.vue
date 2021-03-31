@@ -154,7 +154,7 @@ export default class Schedule extends Vue {
   }
 
   get daySortFunction() {
-    return (a, b) => {
+    return (a: string, b: string) => {
       const aIndex = this.days.findIndex((v) => v === a)
       const bIndex = this.days.findIndex((v) => v === b)
       if (aIndex === bIndex) {
@@ -186,8 +186,9 @@ export default class Schedule extends Vue {
         Array.from(this.timeslot),
         (e: string) => e.split('_')[0]
       )
-      this.cleanUpDaysWhenNoSchedule(groupByDay)
-      for (const day of Object.keys(groupByDay)) {
+      const activeDays = Object.keys(groupByDay)
+      this.cleanupInactiveDays(activeDays)
+      for (const day of activeDays) {
         const days = groupByDay[day] as string[]
         const newIntervals: Interval[] = days.map((dayAndInterval: string) => {
           const slot = parseInt(dayAndInterval.split('_')[1])
@@ -210,10 +211,10 @@ export default class Schedule extends Vue {
     this.forceRenderNumber++
   }
 
-  private cleanUpDaysWhenNoSchedule(groupByDay: Map<string, Interval[]>) {
+  private cleanupInactiveDays(activateDaysKeys: string[]) {
     Array.from(this.availability.keys())
       .filter((key) => {
-        return !Object.keys(groupByDay).includes(key)
+        return !activateDaysKeys.includes(key)
       })
       .forEach((key) => {
         this.availability.delete(key)
@@ -244,7 +245,7 @@ export default class Schedule extends Vue {
     this.addTimeslotKey(key)
   }
 
-  private deSelectTimeslot(day: string, slot: number) {
+  private deSelectTimeslot(day: string, slot: string) {
     const key = Schedule.createKey(day, slot)
     if (this.$refs[key]) {
       const ref = this.$refs[key] as Element[]
@@ -255,25 +256,25 @@ export default class Schedule extends Vue {
     this.deleteTimeslotKey(key)
   }
 
-  private mouseDown(day: string, num: string) {
-    this.operation = this.timeslot.has(Schedule.createKey(day, num))
+  private mouseDown(day: string, slot: string) {
+    this.operation = this.timeslot.has(Schedule.createKey(day, slot))
       ? OperationType.DELETE
       : OperationType.ADD
     this.mouseButtonState = MouseButtonState.DOWN
-    this.mouseOver(day, num)
+    this.mouseOver(day, slot)
   }
 
   private createSlot(hour: number, minutes: number) {
-    return String(hour).padStart(2, 0) + String(minutes).padStart(2, 0)
+    return String(hour).padStart(2, '0') + String(minutes).padStart(2, '0')
   }
 
-  private static createKey(day: string, num: number) {
-    return `${day}_${num}`
+  private static createKey(day: string, slot: string) {
+    return `${day}_${slot}`
   }
 
-  private getTimeslotClasses(day: string, num: string) {
+  private getTimeslotClasses(day: string, slot: string) {
     const classes = ['timeslot']
-    if (this.timeslot.has(Schedule.createKey(day, num))) {
+    if (this.timeslot.has(Schedule.createKey(day, slot))) {
       classes.push('selected')
     }
     return classes
