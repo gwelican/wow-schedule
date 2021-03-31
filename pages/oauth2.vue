@@ -45,6 +45,9 @@ export default class Oauth2 extends Vue {
       path: '/',
       query: {},
     })
+    this.$toast
+      .success(`You are logged in. ${this.$store.state.token.user}`)
+      .goAway(2000)
   }
 }
 </script>
