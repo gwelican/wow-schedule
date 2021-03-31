@@ -18,7 +18,7 @@
             [{{ interval | humanDate }}]
           </span>
         </div>
-        <v-btn class="tw-mt-auto">Save</v-btn>
+        <v-btn class="tw-mt-auto" @click="save">Save</v-btn>
       </div>
       <div
         :key="forceRenderNumber"
@@ -70,6 +70,7 @@
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import { DateTime, Duration, Interval } from 'luxon'
 import _ from 'lodash'
+import { IntervalInput } from '~/types/types'
 
 enum OperationType {
   DELETE,
@@ -80,7 +81,6 @@ enum MouseButtonState {
   DOWN,
   UP,
 }
-
 const myschedule = namespace('myschedule')
 
 @Component({
@@ -96,11 +96,45 @@ const myschedule = namespace('myschedule')
 export default class Schedule extends Vue {
   private forceRenderNumber: number = 100
 
+  @myschedule.Mutation
+  private deleteTimeslotKey: any
+
+  @myschedule.Mutation
+  private addTimeslotKey: any
+
   @myschedule.State
   private timeslot: any
 
-  private days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  @myschedule.Action
+  private loadSchedule2: any
+
+  @myschedule.Action
+  private saveSchedule: any
+
   private availability: Map<string, Interval[]> = new Map<string, Interval[]>()
+
+  private save() {
+    console.log(this.availability)
+    const schedule = Array.from(this.availability).map(
+      ([day, intervals]: [day: string, intervals: Interval[]]) => {
+        return intervals.map((interval: Interval) => {
+          return {
+            start: Number(interval.start.toFormat('HHmm')),
+            end: Number(interval.end.toFormat('HHmm')),
+            timezone: 'PST',
+            day,
+          } as IntervalInput
+        })
+      }
+    )
+    this.saveSchedule({
+      apollo: this.$apollo,
+      timezone: 'pst',
+      schedule: schedule.flat(),
+    })
+  }
+
+  private days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
   private mouseButtonState = MouseButtonState.UP
   private operation: OperationType = OperationType.ADD
@@ -118,14 +152,16 @@ export default class Schedule extends Vue {
     this.forceRenderNumber++
     console.log('redraw')
 
+    this.createAvailabilityRangesFromTimeslots()
+  }
+
+  private createAvailabilityRangesFromTimeslots() {
     if (this.timeslot.size > 1) {
-      console.log(this.timeslot)
       const groupByDay = _.groupBy(
         Array.from(this.timeslot),
         (e: string) => e.split('_')[0]
       )
       for (const day of Object.keys(groupByDay)) {
-        console.log(day)
         const days = groupByDay[day] as string[]
         const newIntervals: Interval[] = days.map((dayAndInterval: string) => {
           const slot = parseInt(dayAndInterval.split('_')[1])
@@ -170,7 +206,7 @@ export default class Schedule extends Vue {
         ref[0].classList.add('selected')
       }
     }
-    this.timeslot.add(key)
+    this.addTimeslotKey(key)
   }
 
   private deSelectTimeslot(day: string, slot: number) {
@@ -182,7 +218,7 @@ export default class Schedule extends Vue {
         ref[0].classList.remove('selected')
       }
     }
-    this.timeslot.delete(key)
+    this.deleteTimeslotKey(key)
   }
 
   private mouseDown(day: string, num: number) {
@@ -206,13 +242,10 @@ export default class Schedule extends Vue {
     return classes
   }
 
-  @myschedule.Action
-  private loadSchedule2: any
-
   mounted() {
     this.loadSchedule2(this.$apollo).then(() => {
       this.forceRenderNumber++
-      console.log(this.timeslot)
+      this.createAvailabilityRangesFromTimeslots()
     })
   }
 }

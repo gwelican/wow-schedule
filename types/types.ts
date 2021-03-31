@@ -291,11 +291,18 @@ export type IntervalInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   addAvailabilityToUser?: Maybe<UserData>;
+  saveSchedule?: Maybe<UserData>;
 };
 
 
 export type MutationAddAvailabilityToUserArgs = {
   availability?: Maybe<IntervalInput>;
+};
+
+
+export type MutationSaveScheduleArgs = {
+  schedule?: Maybe<Array<Maybe<IntervalInput>>>;
+  timezone?: Maybe<Scalars['String']>;
 };
 
 export type Query = {

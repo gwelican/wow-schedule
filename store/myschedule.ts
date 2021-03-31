@@ -1,4 +1,4 @@
-import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
+import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import DollarApollo from 'vue-apollo'
 import gql from 'graphql-tag'
 import { DateTime, Duration, Interval } from 'luxon'
@@ -42,6 +42,42 @@ export default class MySchedule extends VuexModule {
   }
 
   @Action
+  async saveSchedule({
+    apollo,
+    schedule,
+    timezone,
+  }: {
+    apollo: DollarApollo
+    schedule: Interval[]
+    timezone: string
+  }) {
+    console.log(schedule)
+
+    const response = await apollo.mutate({
+      mutation: gql`
+        mutation($schedule: [IntervalInput], $timezone: String) {
+          saveSchedule(schedule: $schedule, timezone: $timezone) {
+            availability {
+              day
+              intervals {
+                day
+                end
+                start
+                timezone
+              }
+            }
+          }
+        }
+      `,
+      variables: {
+        schedule,
+        timezone,
+      },
+    })
+    console.log(response)
+  }
+
+  @Action
   async loadSchedule2(apollo: DollarApollo) {
     const response = await apollo.query({
       query: gql`
@@ -67,14 +103,24 @@ export default class MySchedule extends VuexModule {
         let start = getDateTimeFromInterval(interval.start)
         const end = getDateTimeFromInterval(interval.end)
 
+        const day = availability.day
         while (end.diff(start, 'minutes').minutes > 0) {
-          timeslot.add(availability.day + '_' + start.toFormat('HHmm'))
+          timeslot.add(day + '_' + start.toFormat('HHmm'))
           start = start.plus(Duration.fromObject({ minutes: 15 }))
         }
       }
     }
-    console.log(this.timeslot)
     await this.context.commit('setTimeslot', timeslot)
+  }
+
+  @Mutation
+  addTimeslotKey(key: string) {
+    this.timeslot.add(key)
+  }
+
+  @Mutation
+  deleteTimeslotKey(key: string) {
+    this.timeslot.delete(key)
   }
 
   @Mutation
@@ -168,5 +214,7 @@ function getDateTimeFromInterval(slot: number) {
   return DateTime.now().set({
     hour: slot / 100,
     minute: slot % 100,
+    second: 0,
+    millisecond: 0,
   })
 }

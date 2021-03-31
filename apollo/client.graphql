@@ -5,7 +5,7 @@ type Query {
 
 type UserData {
   userId: String!
-  timezone: String!
+  timezone: String
   availability: [Availability!]!
   username: String!
 }
@@ -24,6 +24,7 @@ type Interval {
 
 type Mutation {
   addAvailabilityToUser(availability: IntervalInput ): UserData
+  saveSchedule(schedule: [IntervalInput], timezone: String): UserData
 }
 
 type AddUserPayload {
