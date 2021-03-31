@@ -41,6 +41,7 @@
           <div
             v-for="(day, index) in days"
             :key="index"
+            class="tw-pl-1 tw-w-10"
             :class="`tw-col-start-${index + 2}`"
           >
             <span class="xs:tw-text-xs">
