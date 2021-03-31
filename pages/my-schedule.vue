@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <div
-      class="tw-rounded tw-bg-gray-700 lg:tw-w-1/2 xs:tw-w-1/2 md:tw-w-1 tw-mx-auto tw-flex"
+      class="tw-rounded tw-bg-gray-700 tw-mx-auto tw-flex xs:tw-w-1/2 lg:tw-w-3/4"
     >
       <div
         class="lg:tw-w-1/2 xs:tw-w-1/3 tw-m-1 tw-flex-col tw-flex tw-items-center"
@@ -290,7 +290,7 @@ export default class Schedule extends Vue {
 
 <style lang="scss">
 .timeslot {
-  @apply tw-bg-blue-200 tw-w-8 tw-h-1.5 tw-border-l-2 tw-border-r-2 tw-border-solid tw-border-black tw-gap-0;
+  @apply tw-bg-blue-200 tw-w-10 tw-h-1.5 tw-border-l-2 tw-border-r-2 tw-border-solid tw-border-black tw-gap-0;
 }
 
 .timeslot:nth-child(2n + 0) {
