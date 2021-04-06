@@ -3576,6 +3576,13 @@
     lodash "^4.17.15"
     pretty "^2.0.0"
 
+"@vvo/tzdb@^6.5.1":
+  version "6.5.1"
+  resolved "https://registry.yarnpkg.com/@vvo/tzdb/-/tzdb-6.5.1.tgz#2fe1dc24394bbe6cdf9517311124721fad096845"
+  integrity sha512-KLmdjomi7n8rDISGBRowbmwmYQhfjPqF0YIcFh1Lc0RYk2/jk1WKKG3oqIRI7libZuSVcKs37AYPkYI3+cE44w==
+  dependencies:
+    luxon "1.26.0"
+
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.9.0.tgz#bd850604b4042459a5a41cd7d338cbed695ed964"
@@ -10758,7 +10765,7 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
-luxon@^1.26.0:
+luxon@1.26.0, luxon@^1.26.0:
   version "1.26.0"
   resolved "https://registry.yarnpkg.com/luxon/-/luxon-1.26.0.tgz#d3692361fda51473948252061d0f8561df02b578"
   integrity sha512-+V5QIQ5f6CDXQpWNICELwjwuHdqeJM1UenlZWx5ujcRMc9venvluCjFb4t5NYLhb6IhkbMVOxzVuOqkgMxee2A==

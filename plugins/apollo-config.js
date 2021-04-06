@@ -10,6 +10,9 @@ export default function ({ $toast, req }) {
       : 'http://localhost:8081/graphql'
 
   const link = onError(({ networkError, graphQLErrors }) => {
+    if (!networkError) {
+      $toast.error('Failed to talk to the server')
+    }
     if (networkError.statusCode) {
       $toast.error('Failed to talk to the server')
     }

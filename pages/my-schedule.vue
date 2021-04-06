@@ -6,15 +6,24 @@
       <div
         class="lg:tw-w-1/2 xs:tw-w-1/3 tw-m-1 tw-flex-col tw-flex tw-items-center"
       >
-        <v-select
+        <v-autocomplete
+          v-model="timezone"
+          dense
           background-color="#035b45"
           rounded
           class="tw-w-2/3"
           style="flex-grow: 0; flex-direction: column-reverse"
           :items="timezones"
-          label="timezone"
+          :auto-select-first="true"
+          hint="Select your timezone"
         >
-        </v-select>
+          <template #item="{ item }">
+            <div>{{ item.abbreviation }} ({{ item.rawFormat }})</div>
+          </template>
+          <template #selection="{ item }">
+            <div>{{ item.abbreviation }} ({{ item.rawFormat }})</div>
+          </template>
+        </v-autocomplete>
         <div
           v-for="day of Array.from(availability.keys()).sort(daySortFunction)"
           :key="day"
@@ -80,8 +89,9 @@
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
-import { DateTime, Duration, Interval } from 'luxon'
+import { DateTime, Duration, Interval, Settings } from 'luxon'
 import _ from 'lodash'
+import { getTimeZones, TimeZone } from '@vvo/tzdb'
 import { IntervalInput } from '~/types/types'
 
 enum OperationType {
@@ -124,8 +134,8 @@ export default class Schedule extends Vue {
   @myschedule.Action
   private saveSchedule: any
 
-  private timezone: string = 'PST'
-  private timezones = ['PST', 'EST']
+  private timezone: string = ''
+  private timezones: TimeZone[] = []
   private availability: Map<string, Interval[]> = new Map<string, Interval[]>()
   private days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
@@ -133,6 +143,7 @@ export default class Schedule extends Vue {
   private operation: OperationType = OperationType.ADD
 
   private save() {
+    DateTime.fromISO('2017-05-15T09:10:23', { zone: 'Europe/Paris' })
     const schedule = Array.from(this.availability).map(
       ([day, intervals]: [day: string, intervals: Interval[]]) => {
         return intervals.map((interval: Interval) => {
@@ -282,6 +293,16 @@ export default class Schedule extends Vue {
   }
 
   mounted() {
+    const timeZones = getTimeZones()
+
+    const localTimezone = timeZones.find(
+      (x) => x.name === Settings.defaultZoneName
+    )
+    if (localTimezone) {
+      this.timezone = localTimezone.abbreviation
+    }
+    this.timezones = timeZones
+
     this.loadSchedule(this.$apollo).then(() => {
       this.createAvailabilityRangesFromTimeslots()
     })
