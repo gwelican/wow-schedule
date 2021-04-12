@@ -3576,10 +3576,10 @@
     lodash "^4.17.15"
     pretty "^2.0.0"
 
-"@vvo/tzdb@^6.5.1":
-  version "6.5.1"
-  resolved "https://registry.yarnpkg.com/@vvo/tzdb/-/tzdb-6.5.1.tgz#2fe1dc24394bbe6cdf9517311124721fad096845"
-  integrity sha512-KLmdjomi7n8rDISGBRowbmwmYQhfjPqF0YIcFh1Lc0RYk2/jk1WKKG3oqIRI7libZuSVcKs37AYPkYI3+cE44w==
+"@vvo/tzdb@^6.6.0":
+  version "6.6.0"
+  resolved "https://registry.yarnpkg.com/@vvo/tzdb/-/tzdb-6.6.0.tgz#2c97e98e85e164cbbc97d1c6e00acfd67275d55e"
+  integrity sha512-BOYar5+FBhVCth477NAuaPMUtjia/Db+5m1j2VSyriIprAxaphDWPdwIAuHf3ieG05tKXL0TOg0yUu/AHh7X1w==
   dependencies:
     luxon "1.26.0"
 
