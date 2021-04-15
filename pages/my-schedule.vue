@@ -134,7 +134,7 @@ export default class Schedule extends Vue {
   private timezoneModel: string = ''
 
   @myschedule.State
-  private timezone: string
+  private timezone!: string
 
   @myschedule.Action
   private loadSchedule: any
