@@ -7,15 +7,15 @@
         class="lg:tw-w-1/2 xs:tw-w-1/3 tw-m-1 tw-flex-col tw-flex tw-items-center"
       >
         <v-autocomplete
-          v-model="timezone"
-          dense
+          v-model="timezoneModel"
           background-color="#035b45"
-          rounded
           class="tw-w-2/3"
           style="flex-grow: 0; flex-direction: column-reverse"
           :items="timezones"
-          :auto-select-first="true"
-          hint="Select your timezone"
+          item-value="abbreviation"
+          item-text="abbreviation"
+          :rules="[checkValidTimezone]"
+          @mousedown="timezoneModel = ''"
         >
           <template #item="{ item }">
             <div>{{ item.abbreviation }} ({{ item.rawFormat }})</div>
@@ -88,7 +88,7 @@
 </template>
 
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
 import { DateTime, Duration, Interval, Settings } from 'luxon'
 import _ from 'lodash'
 import { getTimeZones, TimeZone } from '@vvo/tzdb'
@@ -114,10 +114,13 @@ const myschedule = namespace('myschedule')
       )
     },
   },
-  middleware: 'auth.middleware',
+  // middleware: 'auth.middleware',
 })
 export default class Schedule extends Vue {
   private forceRenderNumber: number = 100
+
+  @myschedule.Mutation
+  private setTimezone: any
 
   @myschedule.Mutation
   private deleteTimeslotKey: any
@@ -128,13 +131,22 @@ export default class Schedule extends Vue {
   @myschedule.State
   private timeslot: any
 
+  private timezoneModel: string = ''
+
+  @myschedule.State
+  private timezone: string
+
   @myschedule.Action
   private loadSchedule: any
 
   @myschedule.Action
   private saveSchedule: any
 
-  private timezone: string = ''
+  @Watch('timezoneModel')
+  updateTimezone(val: string) {
+    this.setTimezone(val)
+  }
+
   private timezones: TimeZone[] = []
   private availability: Map<string, Interval[]> = new Map<string, Interval[]>()
   private days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -165,6 +177,14 @@ export default class Schedule extends Vue {
     })
   }
 
+  checkValidTimezone() {
+    return (
+      this.timezones.find(({ abbreviation }) => {
+        return abbreviation === this.timezone
+      }) !== undefined
+    )
+  }
+
   get daySortFunction() {
     return (a: string, b: string) => {
       const aIndex = this.days.findIndex((v) => v === a)
@@ -193,7 +213,7 @@ export default class Schedule extends Vue {
   }
 
   private createAvailabilityRangesFromTimeslots() {
-    if (this.timeslot.size > 1) {
+    if (this.timeslot.size > 0) {
       const groupByDay = _.groupBy(
         Array.from(this.timeslot),
         (e: string) => e.split('_')[0]
@@ -219,11 +239,16 @@ export default class Schedule extends Vue {
         const merged = Interval.merge(newIntervals)
         this.availability.set(day, merged)
       }
+    } else {
+      this.availability.clear()
     }
+    console.log(this.timeslot)
+    console.log(this.availability)
     this.forceRenderNumber++
   }
 
   private cleanupInactiveDays(activateDaysKeys: string[]) {
+    console.log('active days ' + activateDaysKeys)
     Array.from(this.availability.keys())
       .filter((key) => {
         return !activateDaysKeys.includes(key)
@@ -293,19 +318,27 @@ export default class Schedule extends Vue {
   }
 
   mounted() {
-    const timeZones = getTimeZones()
-
-    const localTimezone = timeZones.find(
-      (x) => x.name === Settings.defaultZoneName
-    )
-    if (localTimezone) {
-      this.timezone = localTimezone.abbreviation
-    }
-    this.timezones = timeZones
+    this.timezones = getTimeZones()
 
     this.loadSchedule(this.$apollo).then(() => {
       this.createAvailabilityRangesFromTimeslots()
+      this.initializeTimezone()
     })
+  }
+
+  private initializeTimezone() {
+    this.timezoneModel = this.timezone
+    console.log(this.timezone)
+    if (this.timeslot.size === 0 && this.timezone === '') {
+      const localTimezone = this.timezones.find(
+        ({ name }) => name === Settings.defaultZoneName
+      )
+      if (localTimezone) {
+        this.setTimezone(localTimezone.abbreviation)
+      } else {
+        this.$toast.error('Cannot detect timezone')
+      }
+    }
   }
 }
 </script>

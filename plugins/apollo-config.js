@@ -12,9 +12,11 @@ export default function ({ $toast, req }) {
   const link = onError(({ networkError, graphQLErrors }) => {
     if (!networkError) {
       $toast.error('Failed to talk to the server')
+      return
     }
     if (networkError.statusCode) {
       $toast.error('Failed to talk to the server')
+      return
     }
     if (graphQLErrors) {
       $toast.error('Server error')

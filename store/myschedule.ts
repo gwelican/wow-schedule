@@ -14,6 +14,7 @@ interface WeekDays {
 })
 export default class MySchedule extends VuexModule {
   private timeslot = new Set()
+  private timezone: string = ''
 
   @Action
   async saveSchedule({
@@ -71,6 +72,9 @@ export default class MySchedule extends VuexModule {
     for (const availability of response.data.myschedule
       .availability as Availability[]) {
       for (const interval of availability.intervals) {
+        if (!this.timezone) {
+          await this.context.commit('setTimezone', interval.timezone)
+        }
         let start = getDateTimeFromInterval(interval.start)
         const end = getDateTimeFromInterval(interval.end)
 
@@ -82,6 +86,11 @@ export default class MySchedule extends VuexModule {
       }
     }
     await this.context.commit('setTimeslot', timeslot)
+  }
+
+  @Mutation
+  setTimezone(timezone: string) {
+    this.timezone = timezone
   }
 
   @Mutation
