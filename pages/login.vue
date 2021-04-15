@@ -1,7 +1,7 @@
 <template>
   <v-container fill-height>
     <v-row align="center" justify="center">
-      <v-col lg="2">
+      <v-col>
         <v-card elevation="2" class="text-center pa-2">
           <v-card-title class="justify-center"
             >You are not logged in</v-card-title
