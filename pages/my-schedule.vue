@@ -114,7 +114,7 @@ const myschedule = namespace('myschedule')
       )
     },
   },
-  // middleware: 'auth.middleware',
+  middleware: 'auth.middleware',
 })
 export default class Schedule extends Vue {
   private forceRenderNumber: number = 100

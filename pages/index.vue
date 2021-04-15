@@ -45,7 +45,7 @@ const availability = namespace('availability')
       return DateTime.fromMillis(date).toISO()
     },
   },
-  // middleware: ['auth.middleware'],
+  middleware: ['auth.middleware'],
 })
 export default class Index extends Vue {
   private forceRedrawCounter = 1
