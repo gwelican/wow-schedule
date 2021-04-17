@@ -29,11 +29,11 @@ export default class Oauth2 extends Vue {
       )
       .catch((err) => {
         // FIXME: log me
-        console.log(err)
+        throw err
       })
 
-    const accessToken = loginTokens.accessToken
-    const refreshToken = loginTokens.refreshToken
+    const accessToken = loginTokens?.accessToken
+    const refreshToken = loginTokens?.refreshToken
 
     this.saveAccessToken(accessToken)
     this.saveRefreshToken(refreshToken)
