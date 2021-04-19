@@ -19,7 +19,7 @@
     "apexcharts": "^3.26.0",
     "cookie-universal-nuxt": "^2.1.4",
     "core-js": "^3.10.1",
-    "@vvo/tzdb": "^6.6.0",
+    "@vvo/tzdb": "^6.7.0",
     "graphql-tag": "^2.11.0",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
