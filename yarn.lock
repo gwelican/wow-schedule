@@ -5687,14 +5687,6 @@ chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.1:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
-chalk@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.1.1.tgz#c80b3fab28bf6371e6863325eee67e618b77e6ad"
-  integrity sha512-diHzdDKxcU+bAsUboHLPEDQiw0qEe0qd7SYUn3HgcFlWgbDcfLGswOHYeGrHKzG9z6UYf01d9VFMfZxPM1xZSg==
-  dependencies:
-    ansi-styles "^4.1.0"
-    supports-color "^7.1.0"
-
 change-case-all@1.0.14:
   version "1.0.14"
   resolved "https://registry.yarnpkg.com/change-case-all/-/change-case-all-1.0.14.tgz#bac04da08ad143278d0ac3dda7eccd39280bfba1"
@@ -15750,11 +15742,6 @@ ua-parser-js@^0.7.28:
   resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.28.tgz#8ba04e653f35ce210239c64661685bf9121dec31"
   integrity sha512-6Gurc1n//gjp9eQNXjD9O3M/sMwVtN5S8Lv9bvOYBfKfDNiIIhqiyi01vMBO45u4zkDE420w/e0se7Vs+sIg+g==
 
-ufo@^0.6.10:
-  version "0.6.10"
-  resolved "https://registry.yarnpkg.com/ufo/-/ufo-0.6.10.tgz#c7ace9b8f72cb08c35e3a8c8edc76f062fbaa7d0"
-  integrity sha512-sMbJnrBcKKsbVyr6++hb0n9lCmrMqkJrNnJIOJ3sckeqY6NMfAULcRGbBWcASSnN1HDV3YqiGCPzi9RVs511bw==
-
 ufo@^0.7.2:
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/ufo/-/ufo-0.7.2.tgz#a0e3c9f1b1d9b55f60e068d17afd6ffbdc4fbd62"
@@ -16328,9 +16315,9 @@ vuetify-loader@^1.6.0:
     loader-utils "^2.0.0"
 
 vuetify@*, vuetify@^2.4.2:
-  version "2.4.11"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.4.11.tgz#3aba19a32cd89c5dce523260f589cf95d90e2dce"
-  integrity sha512-xFNwr95tFRfbyGNg5DBuUkWaKazMBr+ptzoSSL4PGrI0qItY5Vuusxh+ETPtjUXxwz76v5zVtGvF5rWvGQjy7A==
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.5.0.tgz#5e510ed288c268c74fb791facadc7c899e286212"
+  integrity sha512-Lpnwm64xYVEXb5BXdadSRaH0QHjXLFhPPjuVU9VuqWp3Nzr+WP5vA9nMPkJAfUj8vKIJGTRXqyGTGVa4VwrO3A==
 
 vuex-class@^0.3.2:
   version "0.3.2"
