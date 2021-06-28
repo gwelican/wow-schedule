@@ -3838,10 +3838,10 @@
   optionalDependencies:
     prettier "^1.18.2"
 
-"@vue/test-utils@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@vue/test-utils/-/test-utils-1.2.0.tgz#3bc8c17ed549157275f0aec6b95da40887f7297f"
-  integrity sha512-poBTLqeJYNq1TXVhtVfnY8vELUVOFdJY8KZZoUuaAkIqPTWsxonU1M8nMWpZT+xEMrM+49+YcuEqtMHVD9Q9gw==
+"@vue/test-utils@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@vue/test-utils/-/test-utils-1.2.1.tgz#4671fc8844e09ccddb6801ceedd7b7309ae11d06"
+  integrity sha512-WBRdWNJwWTodJlV9mjunTrhgfsTPI5tMuxsCxqSmQs+vyB3ccZIYixnBrkxpKRsXyah/RtEv6+kUPZhnLd9smA==
   dependencies:
     dom-event-types "^1.0.0"
     lodash "^4.17.15"
@@ -12205,6 +12205,11 @@ object-hash@^2.1.1, object-hash@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/object-hash/-/object-hash-2.2.0.tgz#5ad518581eefc443bd763472b8ff2e9c2c0d54a5"
   integrity sha512-gScRMn0bS5fH+IuwyIFgnh9zBdo4DV+6GhygmWM9HyNJSgS0hScp1f5vjtm7oIIOiT9trXrShAkLFSc2IqKNgw==
+
+object-inspect@^1.10.3:
+  version "1.10.3"
+  resolved "https://registry.yarnpkg.com/object-inspect/-/object-inspect-1.10.3.tgz#c2aa7d2d09f50c99375704f7a0adf24c5782d369"
+  integrity sha512-e5mCJlSH7poANfC8z8S9s9S2IN5/4Zb3aZ33f5s8YqoazCFzNLloLU8r5VCG+G7WoqLvAAZoVMcy3tp/3X0Plw==
 
 object-inspect@^1.10.3:
   version "1.10.3"
