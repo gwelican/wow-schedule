@@ -44,7 +44,7 @@
     "@nuxtjs/tailwindcss": "^4.2.0",
     "@nuxtjs/vuetify": "^1.12.1",
     "@tailwindcss/postcss7-compat": "^2.2.4",
-    "@types/lodash": "^4.14.170",
+    "@types/lodash": "^4.14.174",
     "@types/luxon": "^1.27.1",
     "@types/qs": "^6.9.6",
     "@vue/test-utils": "^1.2.1",
